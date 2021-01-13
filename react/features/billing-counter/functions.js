@@ -1,9 +1,14 @@
 // @flow
 
 import { jitsiLocalStorage } from '@jitsi/js-utils';
+import uuid from 'uuid';
+
+import { browser } from '../base/lib-jitsi-meet';
 
 import { BILLING_ID, VPAAS_TENANT_PREFIX } from './constants';
 import logger from './logger';
+
+declare var APP: Object;
 
 /**
  * Returns the full vpaas tenant if available, given a path.
@@ -72,20 +77,27 @@ export async function sendCountRequest({ baseUrl, billingId, jwt, tenant }: {
 }
 
 /**
- * Returns the stored billing id.
+ * Returns the stored billing id (or generates a new one if none is present).
+ *
+ * Safari does now persist third party local storage data for iframes
+ * hosted on different domains. This is why the billing id is stored
+ * in the parent localstorage.
  *
  * @returns {string}
  */
-export function getBillingId() {
-    return jitsiLocalStorage.getItem(BILLING_ID);
-}
+export async function getBillingId() {
+    let billingId;
 
-/**
- * Stores the billing id.
- *
- * @param {string} value - The id to be stored.
- * @returns {void}
- */
-export function setBillingId(value: string) {
-    jitsiLocalStorage.setItem(BILLING_ID, value);
+    if (browser.isSafari()) {
+        billingId = await APP.API.transferBillingId();
+    } else {
+        billingId = jitsiLocalStorage.getItem(BILLING_ID);
+
+        if (!billingId) {
+            billingId = uuid.v4();
+            jitsiLocalStorage.setItem(BILLING_ID, billingId);
+        }
+    }
+
+    return billingId;
 }

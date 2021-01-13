@@ -1,5 +1,6 @@
 import { jitsiLocalStorage } from '@jitsi/js-utils/jitsi-local-storage';
 import EventEmitter from 'events';
+import uuid from 'uuid';
 
 import { urlObjectToString } from '../../../react/features/base/util/uri';
 import {
@@ -525,6 +526,22 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
             case 'video-quality-changed':
                 this._videoQuality = data.videoQuality;
                 break;
+            case 'transfer-billing-id': {
+                let billingId = jitsiLocalStorage.getItem('jitsiBillingId');
+
+                if (!billingId) {
+                    billingId = uuid.v4();
+                    jitsiLocalStorage.setItem('jitsiBillingId', billingId);
+                }
+
+                this._transport.sendEvent({
+                    name: 'transfer-billing-id',
+                    data: [ billingId ]
+                });
+
+                return true;
+            }
+
             case 'local-storage-changed':
                 jitsiLocalStorage.setItem('jitsiLocalStorage', data.localStorageContent);
 

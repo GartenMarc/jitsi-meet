@@ -44,7 +44,7 @@ declare var APP: Object;
 /**
  * List of the available commands.
  */
-let commands = {};
+let commands: {[key: string]: Function} = {};
 
 /**
  * The transport instance used for communication with external apps.
@@ -1075,6 +1075,23 @@ class API {
             name: 'raise-hand-updated',
             handRaised,
             id
+        });
+    }
+
+    /**
+     * Transfers the billingId from the parent localStorage.
+     *
+     * @returns {Promise<string>}
+     */
+    transferBillingId(): Promise<string> {
+        return new Promise(resolve => {
+            commands['transfer-billing-id'] = function(id) {
+                resolve(id);
+                delete commands['transfer-billing-id'];
+            };
+            this._sendEvent({
+                name: 'transfer-billing-id'
+            });
         });
     }
 
