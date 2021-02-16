@@ -16,14 +16,16 @@ import {
     PIN_PARTICIPANT,
     SET_LOADABLE_AVATAR_URL
 } from './actionTypes';
-import { DISCO_REMOTE_CONTROL_FEATURE } from './constants';
+import { DISCO_REMOTE_CONTROL_FEATURE, PARTICIPANT_ROLE } from './constants';
 import {
     getLocalParticipant,
     getNormalizedDisplayName,
     getParticipantDisplayName,
-    getParticipantById
+    getParticipantById,
+    isMoreThanOneModeratorActive
 } from './functions';
 import logger from './logger';
+import { setTileView } from '../../video-layout/actions';
 
 /**
  * Create an action for when dominant speaker changes.
@@ -181,7 +183,11 @@ export function localParticipantLeft() {
 export function localParticipantRoleChanged(role) {
     return (dispatch, getState) => {
         const participant = getLocalParticipant(getState);
-
+		logger.log("XXXXX inside")
+		if (participant.role === PARTICIPANT_ROLE.MODERATOR && !isMoreThanOneModeratorActive(getState)){
+			logger.log("XXXXX inside two")
+			setTileView(true);
+		}
         if (participant) {
             return dispatch(participantRoleChanged(participant.id, role));
         }
@@ -413,6 +419,7 @@ export function participantPresenceChanged(id, presence) {
  * }}
  */
 export function participantRoleChanged(id, role) {
+	
     return participantUpdated({
         id,
         role

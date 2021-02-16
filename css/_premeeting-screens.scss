@@ -43,8 +43,8 @@
         width: 286px;
 
         &.primary {
-            background: #0376DA;
-            border: 1px solid #0376DA;
+            background: #6ab023;
+            border: 1px solid #679a2f;
         }
 
         &.secondary {
@@ -84,7 +84,7 @@
             width: 36px;
 
             &:hover {
-                background-color: #0262B6;
+                background-color: #679a2f;
             }
 
             svg {
@@ -183,7 +183,7 @@
             }
 
             &.focused {
-                box-shadow: 0px 0px 4px 3px #0376DA;
+                box-shadow: 0px 0px 4px 3px #679a2f;
             }
         }
     }

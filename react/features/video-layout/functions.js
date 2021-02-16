@@ -1,9 +1,9 @@
 // @flow
 
-import { getPinnedParticipant, getParticipantCount } from '../base/participants';
+import { getPinnedParticipant, getParticipantCount, isLocalParticipantModerator } from '../base/participants';
 import { isYoutubeVideoPlaying } from '../youtube-player/functions';
-
 import { LAYOUTS } from './constants';
+import { setTileView, setTrainerView, activateTrainerView } from './actions';
 
 declare var interfaceConfig: Object;
 
@@ -15,13 +15,13 @@ declare var interfaceConfig: Object;
  * @returns {string}
  */
 export function getCurrentLayout(state: Object) {
-    if (shouldDisplayTileView(state)) {
-        return LAYOUTS.TILE_VIEW;
-    } else if (interfaceConfig.VERTICAL_FILMSTRIP) {
-        return LAYOUTS.VERTICAL_FILMSTRIP_VIEW;
-    }
+	if (shouldDisplayTileView(state)) {
+		return LAYOUTS.TILE_VIEW;
+	} else if (interfaceConfig.VERTICAL_FILMSTRIP) {
+		return LAYOUTS.VERTICAL_FILMSTRIP_VIEW;
+	}
 
-    return LAYOUTS.HORIZONTAL_FILMSTRIP_VIEW;
+	return LAYOUTS.HORIZONTAL_FILMSTRIP_VIEW;
 }
 
 /**
@@ -31,10 +31,13 @@ export function getCurrentLayout(state: Object) {
  * @returns {number}
  */
 export function getMaxColumnCount() {
-    const configuredMax = interfaceConfig.TILE_VIEW_MAX_COLUMNS || 5;
 
-    return Math.min(Math.max(configuredMax, 1), 5);
+	const configuredMax = interfaceConfig.TILE_VIEW_MAX_COLUMNS || 5;
+
+	return Math.min(Math.max(configuredMax, 1), 5);
 }
+
+
 
 /**
  * Returns the cell count dimensions for tile view. Tile view tries to uphold
@@ -48,6 +51,7 @@ export function getMaxColumnCount() {
  * rows, and visible rows (the rest should overflow) for the tile view layout.
  */
 export function getTileViewGridDimensions(state: Object, maxColumns: number = getMaxColumnCount()) {
+
     // When in tile view mode, we must discount ourselves (the local participant) because our
     // tile is not visible.
     const { iAmRecorder } = state['features/base/config'];
@@ -62,6 +66,7 @@ export function getTileViewGridDimensions(state: Object, maxColumns: number = ge
         columns,
         visibleRows
     };
+
 }
 
 /**
@@ -73,52 +78,129 @@ export function getTileViewGridDimensions(state: Object, maxColumns: number = ge
  * @returns {boolean} True if tile view should be displayed.
  */
 export function shouldDisplayTileView(state: Object = {}) {
-    const participantCount = getParticipantCount(state);
+	const participantCount = getParticipantCount(state);
 
-    // In case of a lonely meeting, we don't allow tile view.
-    // But it's a special case too, as we don't even render the button,
-    // see TileViewButton component.
-    if (participantCount < 2) {
-        return false;
-    }
+	const isModerator = isLocalParticipantModerator(state);
 
-    const { disableTileView } = state['features/base/config'];
 
-    if (disableTileView) {
-        return false;
-    }
 
-    const { tileViewEnabled } = state['features/video-layout'];
 
-    if (tileViewEnabled !== undefined) {
-        // If the user explicitly requested a view mode, we
-        // do that.
-        return tileViewEnabled;
-    }
+	// In case of a lonely meeting, we don't allow tile view.
+	// But it's a special case too, as we don't even render the button,
+	// see TileViewButton component.
+	if (participantCount < 2) {
+		return false;
+	}
 
-    const { iAmRecorder } = state['features/base/config'];
+	const { disableTileView } = state['features/base/config'];
 
-    // None tile view mode is easier to calculate (no need for many negations), so we do
-    // that and negate it only once.
-    const shouldDisplayNormalMode = Boolean(
+	if (disableTileView) {
+		return false;
+	}
 
-        // Reasons for normal mode:
+	const { tileViewEnabled } = state['features/video-layout'];
 
-        // Editing etherpad
-        state['features/etherpad']?.editing
+	if (tileViewEnabled !== undefined) {
+		// If the user explicitly requested a view mode, we
+		// do that.
+		return tileViewEnabled;
+	}
 
-        // We pinned a participant
-        || getPinnedParticipant(state)
+	const { iAmRecorder } = state['features/base/config'];
 
-        // It's a 1-on-1 meeting
-        || participantCount < 3
+	// None tile view mode is easier to calculate (no need for many negations), so we do
+	// that and negate it only once.
+	const shouldDisplayNormalMode = Boolean(
 
-        // There is a shared YouTube video in the meeting
-        || isYoutubeVideoPlaying(state)
+		// Reasons for normal mode:
 
-        // We want jibri to use stage view by default
-        || iAmRecorder
-    );
+		// Editing etherpad
+		state['features/etherpad']?.editing
 
-    return !shouldDisplayNormalMode;
+		// We pinned a participant
+		|| getPinnedParticipant(state)
+
+		// It's a 1-on-1 meeting
+		/*|| participantCount < 3*/
+
+		// There is a shared YouTube video in the meeting
+		|| isYoutubeVideoPlaying(state)
+
+		// We want jibri to use stage view by default
+		|| iAmRecorder
+
+		|| !isModerator
+	);
+
+	return !shouldDisplayNormalMode;
+}
+
+
+
+
+/**
+* BinaStar addiditional Content
+*
+* indicator function. used to check in followme if trainer view is active or not.
+* gets not toggled if view of trainer switches could be deactivated via disableTrainerView /base/config
+* @param state
+* @returns boolean true if active false if inactive
+* @author Marcus Zentgraf
+ */
+export function isTrainerActive(state: Object = {}) {
+
+	const { disableTrainerView } = state['features/base/config'];
+
+	if (disableTrainerView) return false;
+
+	const { trainerViewActive } = state['features/video-layout'];
+
+	if (trainerViewActive !== undefined) {
+		return trainerViewActive;
+	}
+	return false;
+}
+
+
+/**
+* Binastar additional content
+* 
+* CLEANUP_CANDIDAT
+* mainly used in toolbox/web/toolbox.js
+* returns value if trainerview is active or not.
+* @param {Object} state
+* @returns boolean 
+* @author Marcus Zentgraf
+*
+*/
+
+export function shouldDisplayTrainerView(state: Object = {}) {
+
+	const participantCount = getParticipantCount(state);
+	const isModerator = isLocalParticipantModerator(state);
+
+	if (participantCount < 2) {
+		return false;
+	}
+
+	const { disableTrainerView } = state['features/base/config'];
+
+	if (disableTrainerView) {
+		return false;
+	}
+
+	if (!isModerator) {
+		return false;
+	}
+
+	const { trainerViewEnabled } = state['features/video-layout'];
+
+	if (trainerViewEnabled !== undefined) {
+		// If the user explicitly requested a view mode, we
+		// do that.
+		return trainerViewEnabled;
+	}
+
+
+	return false;
 }

@@ -26,14 +26,14 @@
         width: fit-content;
         width: -moz-fit-content;
         height: 24px;
-        background: #0376DA;
+        background: #6ab023;
         border-radius: 3px;
         font-size: 14px;
         line-height: 24px;
         cursor: pointer;
 
         &:hover {
-            background: #278ADF;
+            background: rgba (106,176,35,.5);
         }
 
         &-text {

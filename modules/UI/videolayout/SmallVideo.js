@@ -414,17 +414,20 @@ export default class SmallVideo {
      */
     selectDisplayMode(input) {
         if (!input.tileViewActive && input.isScreenSharing) {
-            return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;
+            /*return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;*/
+			return DISPLAY_AVATAR
         } else if (input.isCurrentlyOnLargeVideo && !input.tileViewActive) {
             // Display name is always and only displayed when user is on the stage
             return input.isVideoPlayable && !input.isAudioOnly ? DISPLAY_BLACKNESS_WITH_NAME : DISPLAY_AVATAR_WITH_NAME;
         } else if (input.isVideoPlayable && input.hasVideo && !input.isAudioOnly) {
             // check hovering and change state to video with name
-            return input.isHovered ? DISPLAY_VIDEO_WITH_NAME : DISPLAY_VIDEO;
+           /* return input.isHovered ? DISPLAY_VIDEO_WITH_NAME : DISPLAY_VIDEO;*/
+           return DISPLAY_VIDEO
         }
 
         // check hovering and change state to avatar with name
-        return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;
+        /*return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;*/
+        return DISPLAY_AVATAR
     }
 
     /**
@@ -448,7 +451,7 @@ export default class SmallVideo {
 
         return {
             isCurrentlyOnLargeVideo: this.isCurrentlyOnLargeVideo(),
-            isHovered: this._isHovered(),
+            /*isHovered: this._isHovered(),*/
             isAudioOnly: APP.conference.isAudioOnly(),
             tileViewActive: shouldDisplayTileView(state),
             isVideoPlayable: this.isVideoPlayable(),
@@ -487,10 +490,10 @@ export default class SmallVideo {
         this.displayMode = this.selectDisplayMode(displayModeInput);
 
         switch (this.displayMode) {
-        case DISPLAY_AVATAR_WITH_NAME:
+/*        case DISPLAY_AVATAR_WITH_NAME:
             displayModeString = 'avatar-with-name';
             this.$container.addClass('display-avatar-with-name');
-            break;
+            break;*/
         case DISPLAY_BLACKNESS_WITH_NAME:
             displayModeString = 'blackness-with-name';
             this.$container.addClass('display-name-on-black');
@@ -499,10 +502,10 @@ export default class SmallVideo {
             displayModeString = 'video';
             this.$container.addClass('display-video');
             break;
-        case DISPLAY_VIDEO_WITH_NAME:
+   /*     case DISPLAY_VIDEO_WITH_NAME:
             displayModeString = 'video-with-name';
             this.$container.addClass('display-name-on-video');
-            break;
+            break;*/
         case DISPLAY_AVATAR:
         default:
             displayModeString = 'avatar';

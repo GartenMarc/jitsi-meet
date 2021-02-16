@@ -44,7 +44,7 @@
     },
     "calendarSync": {
         "addMeetingURL": "Konferenzlink hinzufügen",
-        "confirmAddLink": "Möchten Sie einen Jitsi-Link zu diesem Termin hinzufügen?",
+        "confirmAddLink": "Möchten Sie einen BinaStar-Meet-Link zu diesem Termin hinzufügen?",
         "error": {
             "appConfiguration": "Kalenderintegration ist nicht richtig konfiguriert.",
             "generic": "Ein Fehler ist aufgetreten. Prüfen Sie Ihre Kalendereinstellungen oder versuchen Sie, den Kalender zu aktualisieren.",
@@ -335,7 +335,7 @@
         "answer": "Antworten",
         "audioCallTitle": "Eingehender Anruf",
         "decline": "OK",
-        "productLabel": "von Jitsi Meet",
+        "productLabel": "von BinaStar Meet",
         "videoCallTitle": "Eingehender Videoanruf"
     },
     "info": {
@@ -496,7 +496,7 @@
         "newDeviceAudioTitle": "Neues Audiogerät erkannt",
         "newDeviceAction": "Verwenden",
         "OldElectronAPPTitle": "Sicherheitslücke!",
-        "oldElectronClientDescription1": "Sie scheinen eine alte Version des Jitsi-Meet-Clients zu nutzen. Diese hat bekannte Schwachstellen. Bitte aktualisieren Sie auf unsere ",
+        "oldElectronClientDescription1": "Sie scheinen eine alte Version des BinaStar-Meet-Clients zu nutzen. Diese hat bekannte Schwachstellen. Bitte aktualisieren Sie auf unsere ",
         "oldElectronClientDescription2": "aktuelle Version",
         "oldElectronClientDescription3": "!"
     },
@@ -731,7 +731,8 @@
             "toggleCamera": "Kamera wechseln",
             "toggleFilmstrip": "Miniaturansichten ein-/ausschalten",
             "videomute": "„Video stummschalten“ ein-/ausschalten",
-            "videoblur": "Video-Unschärfe ein-/ausschalten"
+            "videoblur": "Video-Unschärfe ein-/ausschalten",
+            "trainerView": "Trainerview ein-/ausschalten"
         },
         "addPeople": "Teilnehmer zur Konferenz hinzufügen",
         "audioOnlyOff": "Modus „Nur Audio“ deaktivieren",
@@ -792,7 +793,10 @@
         "toggleCamera": "Kamera wechseln",
         "videomute": "Kamera starten / stoppen",
         "startvideoblur": "Hintergrundunschärfe aktivieren",
-        "stopvideoblur": "Hintergrundunschärfe deaktivieren"
+        "stopvideoblur": "Hintergrundunschärfe deaktivieren",
+        "trainerViewToggle": "Trainer Ansicht ein und ausschalten",
+        "enterTrainerView": "Trainer Ansicht einschalten",
+        "exitTrainerView": "Trainer Anischt verlassen"
     },
     "transcribing": {
         "ccButtonTooltip": "Untertitel ein-/ausschalten",
@@ -876,6 +880,8 @@
         "getHelp": "Hilfe",
         "go": "Los",
         "goSmall": "Los",
+		"headerTitle":"BinaStar Meet: Zuverlässige und sichere Videokonferenzen",
+		"headerSubtitle":"DSGVO-konforme Videokonferenzen mit Serverstandort in Deutschland. Sichere Datenübertragung durch Ende-zu-Ende-Verschlüsselung",
         "info": "Einwahlinformationen",
         "join": "ERSTELLEN / BEITRETEN",
         "moderatedMessage": "Oder <a href=\"{{url}}\" rel=\"noopener noreferrer\" target=\"_blank\">reservieren Sie sich eine Konferenz-URL</a>, unter der Sie der einzige Moderator sind.",

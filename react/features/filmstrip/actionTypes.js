@@ -52,6 +52,29 @@ export const SET_FILMSTRIP_VISIBLE = 'SET_FILMSTRIP_VISIBLE';
 export const SET_TILE_VIEW_DIMENSIONS = 'SET_TILE_VIEW_DIMENSIONS';
 
 /**
+ * The type of (redux) action which sets the dimensions of the trainer view grid.
+ *
+ * {
+ *     type: SET_TRAINER_VIEW_DIMENSIONS,
+ *     dimensions: {
+ *         gridDimensions: {
+ *             columns: number,
+ *             height: number,
+ *             visibleRows: number,
+ *             width: number
+ *         },
+ *         thumbnailSize: {
+ *             height: number,
+ *             width: number
+ *         },
+ *         filmstripWidth: number
+ *     }
+ * }
+ */
+export const SET_TRAINER_VIEW_DIMENSIONS = 'SET_TRAINER_VIEW_DIMENSIONS';
+
+
+/**
  * The type of (redux) action which sets the dimensions of the thumbnails in horizontal view.
  *
  * {

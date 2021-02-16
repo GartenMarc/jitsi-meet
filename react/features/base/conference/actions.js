@@ -20,7 +20,8 @@ import {
     participantMutedUs,
     participantPresenceChanged,
     participantRoleChanged,
-    participantUpdated
+    participantUpdated,
+	PARTICIPANT_ROLE
 } from '../participants';
 import { getLocalTracks, trackAdded, trackRemoved } from '../tracks';
 import {
@@ -407,7 +408,6 @@ export function createConference() {
         if (!room) {
             throw new Error('Cannot join a conference without a room name!');
         }
-
         const config = state['features/base/config'];
         const { tenant } = state['features/base/jwt'];
         const { email, name: nick } = getLocalParticipant(state);
@@ -582,6 +582,7 @@ export function sendTones(tones: string, duration: number, pause: number) {
  * }}
  */
 export function setFollowMe(enabled: boolean) {
+	console.log("follow me triggered with value: " + enabled);
     return {
         type: SET_FOLLOW_ME,
         enabled

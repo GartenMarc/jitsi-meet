@@ -1,0 +1,41 @@
+.moderator {
+    .tile-view {
+        #filmStripRemoteVideos {
+            align-items: flex-end;
+            justify-content: flex-end;
+            
+        }
+        #localVideoTileViewContainer {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            top: 10px;
+            width:48%;
+
+            >.videocontainer {
+                width:100% !important;
+                height: 100% !important;
+            }
+
+        }
+        #filmStripRemoteVideosContainer {
+            width: 48% !important;
+			overflow-y: scroll;
+
+            > .videocontainer {
+                width: 49% !important;
+                min-width: 49% !important;
+            }
+        }
+    }
+
+/* to sort the videocontainer */
+    .display-avatar-only {
+        order: 2;
+		display: none !important;
+    }
+    .display-video {
+        order: 1;
+    }
+   
+}

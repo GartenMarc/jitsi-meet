@@ -25,7 +25,6 @@
     display: flex;
     flex-direction: column-reverse;
     height: 100%;
-    width: 100%;
     padding: ($desktopAppDragBarHeight - 5px) 5px 10px;
     /**
      * fixed positioning is necessary for remote menus and tooltips to pop
@@ -38,6 +37,10 @@
     transition: height .3s ease-in;
     right: 0;
     z-index: $filmstripVideosZ;
+  /*Own videobox bigger */
+    max-width: 100% !important;
+    min-width: 390px;
+    width: 25% !important;
 
     &.reduce-height {
         height: calc(100% - #{$newToolbarSizeWithPadding});
@@ -56,7 +59,7 @@
 
         &.hidden {
             bottom: auto;
-            right: -196px;
+            right: -9999px;
         }
 
         /**

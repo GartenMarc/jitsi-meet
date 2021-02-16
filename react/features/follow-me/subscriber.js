@@ -2,13 +2,16 @@
 
 import { getCurrentConference } from '../base/conference';
 import {
-    getPinnedParticipant,
-    isLocalParticipantModerator
+	getPinnedParticipant,
+	isLocalParticipantModerator,
+	getModerator
 } from '../base/participants';
 import { StateListenerRegistry } from '../base/redux';
-import { shouldDisplayTileView } from '../video-layout/functions';
+import { shouldDisplayTileView, shouldDisplayTrainerView, isTrainerActive } from '../video-layout/functions';
 
 import { FOLLOW_ME_COMMAND } from './constants';
+
+import logger from './logger';
 
 /**
  * Subscribes to changes to the Follow Me setting for the local participant to
@@ -18,7 +21,7 @@ import { FOLLOW_ME_COMMAND } from './constants';
  */
 StateListenerRegistry.register(
     /* selector */ state => state['features/base/conference'].followMeEnabled,
-    /* listener */ (newSelectedValue, store) => _sendFollowMeCommand(newSelectedValue || 'off', store));
+    /* listener */(newSelectedValue, store) => _sendFollowMeCommand(newSelectedValue || 'off', store));
 
 /**
  * Subscribes to changes to the currently pinned participant in the user
@@ -26,10 +29,10 @@ StateListenerRegistry.register(
  */
 StateListenerRegistry.register(
     /* selector */ state => {
-        const pinnedParticipant = getPinnedParticipant(state);
+		const pinnedParticipant = getPinnedParticipant(state);
 
-        return pinnedParticipant ? pinnedParticipant.id : null;
-    },
+		return pinnedParticipant ? pinnedParticipant.id : null;
+	},
     /* listener */ _sendFollowMeCommand);
 
 /**
@@ -59,6 +62,14 @@ StateListenerRegistry.register(
     /* selector */ state => state['features/video-layout'].tileViewEnabled,
     /* listener */ _sendFollowMeCommand);
 
+StateListenerRegistry.register(
+    /* selector */ state => state['features/video-layout'].trainerViewEnabled,
+    /* listener */ _sendFollowMeCommand);
+
+StateListenerRegistry.register(
+    /* selector */ state => state['features/video-layout'].trainerViewActive,
+    /* listener */ _sendFollowMeCommand);
+
 /**
  * Private selector for returning state from redux that should be respected by
  * other participants while follow me is enabled.
@@ -67,14 +78,35 @@ StateListenerRegistry.register(
  * @returns {Object}
  */
 function _getFollowMeState(state) {
-    const pinnedParticipant = getPinnedParticipant(state);
+	const pinnedParticipant = getPinnedParticipant(state);
 
-    return {
-        filmstripVisible: state['features/filmstrip'].visible,
-        nextOnStage: pinnedParticipant && pinnedParticipant.id,
-        sharedDocumentVisible: state['features/etherpad'].editing,
-        tileViewEnabled: shouldDisplayTileView(state)
-    };
+	return {
+		filmstripVisible: state['features/filmstrip'].visible,
+		nextOnStage: pinnedParticipant && pinnedParticipant.id,
+		sharedDocumentVisible: state['features/etherpad'].editing,
+		tileViewEnabled: shouldDisplayTileView(state)
+	};
+}
+
+/**
+additional BinaStar Content
+
+creates a different payload for the follow me function
+written for the trainer view
+@param state
+@returns defined payload
+@author Marcus Zentgraf
+*/
+function _getFollowMeStateOnTrainerView(state) {
+	/*const pinnedParticipant = getPinnedParticipant(state);*/
+	const modParticipant = getModerator(state);
+
+	return {
+		filmstripVisible: true,
+		nextOnStage: modParticipant && modParticipant.id,
+		sharedDocumentVisible: state['features/etherpad'].editing,
+		tileViewEnabled: false
+	}
 }
 
 /**
@@ -86,35 +118,49 @@ function _getFollowMeState(state) {
  * @returns {void}
  */
 function _sendFollowMeCommand(
-        newSelectedValue, store) { // eslint-disable-line no-unused-vars
-    const state = store.getState();
-    const conference = getCurrentConference(state);
+	newSelectedValue, store) { // eslint-disable-line no-unused-vars
+	const state = store.getState();
+	const conference = getCurrentConference(state);
 
-    if (!conference) {
-        return;
-    }
+	if (!conference) {
+		return;
+	}
 
-    // Only a moderator is allowed to send commands.
-    if (!isLocalParticipantModerator(state)) {
-        return;
-    }
+	// Only a moderator is allowed to send commands.
+	if (!isLocalParticipantModerator(state)) {
+		return;
+	}
 
-    if (newSelectedValue === 'off') {
-        // if the change is to off, local user turned off follow me and
-        // we want to signal this
+	if (newSelectedValue === 'off') {
+		// if the change is to off, local user turned off follow me and
+		// we want to signal this
+		conference.sendCommandOnce(
+			FOLLOW_ME_COMMAND,
+			{ attributes: { off: true } }
+		);
+		return;
+	} else if (!state['features/base/conference'].followMeEnabled) {
+		return;
+	}
 
-        conference.sendCommandOnce(
-            FOLLOW_ME_COMMAND,
-            { attributes: { off: true } }
-        );
+	// checks if the trainer View is active or not
+	// if active followme should be disabled
+	if (isTrainerActive(state)) {
 
-        return;
-    } else if (!state['features/base/conference'].followMeEnabled) {
-        return;
-    }
+		/*conference.sendCommand(
+			FOLLOW_ME_COMMAND,
+			{ attributes: _getFollowMeStateOnTrainerView(state) }
+		)*/
+		return;
+	} else {
+		conference.sendCommand(
+			FOLLOW_ME_COMMAND,
+			{ attributes: _getFollowMeState(state) }
+		);
+	}
+	
 
-    conference.sendCommand(
-        FOLLOW_ME_COMMAND,
-        { attributes: _getFollowMeState(state) }
-    );
+	/*logger.warn('No Command');*/
+
+
 }

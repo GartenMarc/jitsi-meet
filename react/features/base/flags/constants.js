@@ -112,6 +112,13 @@ export const SERVER_URL_CHANGE_ENABLED = 'server-url-change.enabled';
  */
 export const TILE_VIEW_ENABLED = 'tile-view.enabled';
 
+
+
+export const TRAINER_VIEW_ENABLED = 'trainer-view.enabled';
+
+
+export const TRAINER_VIEW_ACTIVATED = 'trainer-view-activated.enabled';
+
 /**
  * Flag indicating if the toolbox should be always be visible
  * Default: disabled (false).

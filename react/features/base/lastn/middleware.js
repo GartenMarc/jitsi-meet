@@ -3,7 +3,7 @@
 import { SET_FILMSTRIP_ENABLED } from '../../filmstrip/actionTypes';
 import { SELECT_LARGE_VIDEO_PARTICIPANT } from '../../large-video/actionTypes';
 import { APP_STATE_CHANGED } from '../../mobile/background/actionTypes';
-import { SCREEN_SHARE_PARTICIPANTS_UPDATED, SET_TILE_VIEW } from '../../video-layout/actionTypes';
+import { SCREEN_SHARE_PARTICIPANTS_UPDATED, SET_TILE_VIEW, SET_TRAINER_VIEW } from '../../video-layout/actionTypes';
 import { SET_AUDIO_ONLY } from '../audio-only/actionTypes';
 import { CONFERENCE_JOINED } from '../conference/actionTypes';
 import {
@@ -40,6 +40,9 @@ MiddlewareRegistry.register(store => next => action => {
     case SET_TILE_VIEW:
         _updateLastN(store);
         break;
+	case SET_TRAINER_VIEW:
+		_updateLastN(store);
+		break;
     }
 
     return result;

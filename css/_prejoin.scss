@@ -50,6 +50,9 @@
         font-size: 13px;
         text-align: center;
     }
+	&-input-area-hint {
+		text-align: center;
+	}
 }
 
 @mixin name-placeholder {

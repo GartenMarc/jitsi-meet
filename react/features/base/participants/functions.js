@@ -265,7 +265,7 @@ function _getAllParticipants(stateful) {
 export function getYoutubeParticipant(stateful: Object | Function) {
     const participants = _getAllParticipants(stateful);
 
-    return participants.filter(p => p.isFakeParticipant)[0];
+    participants.filter(p => p.isFakeParticipant)[0];
 }
 
 /**
@@ -277,6 +277,40 @@ export function getYoutubeParticipant(stateful: Object | Function) {
 export function isParticipantModerator(participant: Object) {
     return participant?.role === PARTICIPANT_ROLE.MODERATOR;
 }
+
+/**
+ * BinaStar Additional Content
+ *
+ * Returns the first found Moderator
+ * only usfull if there is only one Moderator
+ *
+ * @param {Object|Function} stateful
+ * @returns {Object} moderator Object
+ * @author Marcus Zentgraf
+ */
+export function getModerator(stateful: Object | Function){
+    const participants = _getAllParticipants(stateful);
+    return participants.filter(p => p.role === PARTICIPANT_ROLE.MODERATOR)[0]
+}
+
+/**
+* Binastar Additional Content
+* 
+* checks for more than one moderator. returns boolean
+* @param {Object|Function} stateful
+* @returns {boolean} true if there are more than one Moderator false if one or none
+* @author Marcus Zentgraf
+*/
+export function isMoreThanOneModeratorActive(stateful: Object | Function){
+	const participants = _getAllParticipants(stateful);
+	const moderators = participants.filter(p => p.role === PARTICIPANT_ROLE.MODERATOR)
+	logger.log("XXXXX inside isMore value of length: " + moderators.length);
+	if (moderators.length > 1){
+		return true;
+	}
+	return false;
+}
+
 
 /**
  * Returns true if all of the meeting participants are moderators.

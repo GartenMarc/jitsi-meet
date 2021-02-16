@@ -4,7 +4,8 @@ import {
     SET_FILMSTRIP_ENABLED,
     SET_FILMSTRIP_HOVERED,
     SET_FILMSTRIP_VISIBLE,
-    SET_TILE_VIEW_DIMENSIONS
+    SET_TILE_VIEW_DIMENSIONS,
+	SET_TRAINER_VIEW_DIMENSIONS
 } from './actionTypes';
 
 /**
@@ -72,6 +73,29 @@ export function setFilmstripVisible(visible: boolean) {
 export function setTileViewDimensions({ thumbnailSize }: Object) {
     return {
         type: SET_TILE_VIEW_DIMENSIONS,
+        dimensions: {
+            thumbnailSize
+        }
+    };
+}
+
+/**
+ * Sets the dimensions of the trainer view grid. The action is only partially implemented on native as not all
+ * of the values are currently used. Check the description of {@link SET_TRAINER_VIEW_DIMENSIONS} for the full set
+ * of properties.
+ *
+ * @param {Object} dimensions - The trainer view dimensions.
+ * @param {Object} thumbnailSize - The size of an individual video thumbnail.
+ * @param {number} thumbnailSize.height - The height of an individual video thumbnail.
+ * @param {number} thumbnailSize.width - The width of an individual video thumbnail.
+ * @returns {{
+ *     type: SET_TRAINER_VIEW_DIMENSIONS,
+ *     dimensions: Object
+ * }}
+ */
+export function setTrainerViewDimensions({ thumbnailSize }: Object) {
+    return {
+        type: SET_TRAINER_VIEW_DIMENSIONS,
         dimensions: {
             thumbnailSize
         }

@@ -161,26 +161,26 @@ $unsupportedDesktopBrowserTextFontSize: 21px;
 /**
  * The size of the default watermark.
  */
-$watermarkWidth: 71px;
-$watermarkHeight: 32px;
+$watermarkWidth: 183px;
+$watermarkHeight: 100px;
 
-$welcomePageWatermarkWidth: 71px;
-$welcomePageWatermarkHeight: 32px;
+$welcomePageWatermarkWidth: 183px;
+$welcomePageWatermarkHeight: 100px;
 
 /**
  * Welcome page variables.
  */
 $welcomePageDescriptionColor: #fff;
 $welcomePageFontFamily: inherit;
-$welcomePageBackground: none;
+$welcomePageBackground: linear-gradient(-90deg,#a7cd7e 0, #679a2f 50%, #a7cd7e 100%);
 $welcomePageTitleColor: #fff;
 
-$welcomePageHeaderBackground: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../images/welcome-background.png');
+$welcomePageHeaderBackground: none;
 $welcomePageHeaderBackgroundPosition: center;
 $welcomePageHeaderBackgroundRepeat: none;
 $welcomePageHeaderBackgroundSize: cover;
 $welcomePageHeaderPaddingBottom: 0px;
-$welcomePageHeaderTitleMaxWidth: initial;
+$welcomePageHeaderTitleMaxWidth: 50%;
 $welcomePageHeaderTextAlign: center;
 
 $welcomePageHeaderContainerDisplay: flex;

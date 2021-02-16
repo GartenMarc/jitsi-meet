@@ -7,7 +7,8 @@ import {
     SET_FILMSTRIP_HOVERED,
     SET_FILMSTRIP_VISIBLE,
     SET_HORIZONTAL_VIEW_DIMENSIONS,
-    SET_TILE_VIEW_DIMENSIONS
+    SET_TILE_VIEW_DIMENSIONS,
+	SET_TRAINER_VIEW_DIMENSIONS
 } from './actionTypes';
 
 const DEFAULT_STATE = {
@@ -34,7 +35,15 @@ const DEFAULT_STATE = {
      * @type {Object}
      */
     tileViewDimensions: {},
-
+	
+	 /**
+     * The trainer view dimensions.
+     *
+     * @public
+     * @type {Object}
+     */
+    trainerViewDimensions: {},
+	
     /**
      * The indicator which determines whether the {@link Filmstrip} is visible.
      *
@@ -84,6 +93,11 @@ ReducerRegistry.register(
                 ...state,
                 tileViewDimensions: action.dimensions
             };
+		case SET_TRAINER_VIEW_DIMENSIONS:
+			return {
+				...state,
+				trainerViewDimensions : action.dimensions
+			}
         }
 
         return state;

@@ -2,7 +2,9 @@
 
 import {
     getParticipantCountWithFake,
-    getPinnedParticipant
+    getPinnedParticipant,
+ 	getLocalParticipant,
+	PARTICIPANT_ROLE
 } from '../base/participants';
 import { toState } from '../base/redux';
 
@@ -13,6 +15,7 @@ declare var interfaceConfig: Object;
 // Minimum space to keep between the sides of the tiles and the sides
 // of the window.
 const TILE_VIEW_SIDE_MARGINS = 20;
+const TRAINER_VIEW_SIDE_MARGINS = 10;
 
 /**
  * Returns true if the filmstrip on mobile is visible, false otherwise.
@@ -47,9 +50,12 @@ export function shouldRemoteVideosBeVisible(state: Object) {
     // in the filmstrip.
     const participantCount = getParticipantCountWithFake(state);
     let pinnedParticipant;
+	const localParticipant = getLocalParticipant(state);
+    const isModerator = localParticipant.role === PARTICIPANT_ROLE.MODERATOR
 
     return Boolean(
-        participantCount > 2
+		participantCount > 2 && isModerator )
+        /*participantCount > 2
 
             // Always show the filmstrip when there is another participant to
             // show and the filmstrip is hovered, or local video is pinned, or
@@ -60,7 +66,8 @@ export function shouldRemoteVideosBeVisible(state: Object) {
                     || ((pinnedParticipant = getPinnedParticipant(state))
                         && pinnedParticipant.local)))
 
-            || state['features/base/config'].disable1On1Mode);
+            || state['features/base/config'].disable1On1Mode);*/
+
 }
 
 /**
@@ -100,6 +107,31 @@ export function calculateThumbnailSizeForTileView({
 }: Object) {
     const viewWidth = clientWidth - TILE_VIEW_SIDE_MARGINS;
     const viewHeight = clientHeight - TILE_VIEW_SIDE_MARGINS;
+    const initialWidth = viewWidth / columns;
+    const aspectRatioHeight = initialWidth / TILE_ASPECT_RATIO;
+    const height = Math.floor(Math.min(aspectRatioHeight, viewHeight / visibleRows));
+    const width = Math.floor(TILE_ASPECT_RATIO * height);
+
+    return {
+        height,
+        width
+    };
+}
+
+/**
+ * Calculates the size for thumbnails when in trainer view layout.
+ *
+ * @param {Object} dimensions - The desired dimensions of the trainer view grid.
+ * @returns {{height, width}}
+ */
+export function calculateThumbnailSizeForTrainerView({
+    columns,
+    visibleRows,
+    clientWidth,
+    clientHeight
+}: Object) {
+    const viewWidth = clientWidth - TRAINER_VIEW_SIDE_MARGINS;
+    const viewHeight = clientHeight - TRAINER_VIEW_SIDE_MARGINS;
     const initialWidth = viewWidth / columns;
     const aspectRatioHeight = initialWidth / TILE_ASPECT_RATIO;
     const height = Math.floor(Math.min(aspectRatioHeight, viewHeight / visibleRows));

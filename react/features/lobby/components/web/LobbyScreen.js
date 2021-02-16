@@ -92,11 +92,11 @@ class LobbyScreen extends AbstractLobbyScreen {
         const { t } = this.props;
 
         return (
-            <InputField
-                onChange = { this._onChangeDisplayName }
-                placeHolder = { t('lobby.nameField') }
-                testId = 'lobby.nameField'
-                value = { displayName } />
+                <InputField
+                    onChange = { this._onChangeDisplayName }
+                    placeHolder = { t('lobby.nameField') }
+                    testId = 'lobby.nameField'
+                    value = { displayName } />
         );
     }
 

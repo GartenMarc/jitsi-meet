@@ -64,7 +64,10 @@ import {
 import {
     TileViewButton,
     shouldDisplayTileView,
-    toggleTileView
+    toggleTileView,
+    TrainerViewButton,
+	toggleTrainerView,
+	shouldDisplayTrainerView
 } from '../../../video-layout';
 import {
     OverflowMenuVideoQualityItem,
@@ -138,6 +141,10 @@ type Props = {
      */
     _tileViewEnabled: boolean,
 
+    //binastar TrainerView
+    
+    _trainerViewEnabled: boolean,
+    
     /**
      * Whether or not the current meeting belongs to a JaaS user.
      */
@@ -258,7 +265,8 @@ class Toolbox extends Component<Props, State> {
         this._onToolbarToggleSharedVideo = this._onToolbarToggleSharedVideo.bind(this);
         this._onToolbarOpenLocalRecordingInfoDialog = this._onToolbarOpenLocalRecordingInfoDialog.bind(this);
         this._onShortcutToggleTileView = this._onShortcutToggleTileView.bind(this);
-
+        this._onShortcutToggleTrainerView = this._onShortcutToggleTrainerView.bind(this);
+        
         this.state = {
             windowWidth: window.innerWidth
         };
@@ -301,6 +309,11 @@ class Toolbox extends Component<Props, State> {
                 character: 'W',
                 exec: this._onShortcutToggleTileView,
                 helpDescription: 'toolbar.tileViewToggle'
+            },
+            this._shouldShowButton('trainerview') && {
+            	character: 'T',
+            	exec: this._onShortcutToggleTrainerView,
+            	helpDescription:'toolbar.trainerViewToggle'
             }
         ];
 
@@ -529,6 +542,10 @@ class Toolbox extends Component<Props, State> {
         this.props.dispatch(toggleTileView());
     }
 
+	_doToggleTrainerView() {
+		this.props.dispatch(toggleTrainerView());
+	}
+
     _onMouseOut: () => void;
 
     /**
@@ -641,6 +658,17 @@ class Toolbox extends Component<Props, State> {
 
         this._doToggleTileView();
     }
+	_onShortcutToggleTrainerView: () => void;
+	
+	_onShortcutToggleTrainerView(){
+		sendAnalytics(createShortcutEvent(
+			'toggle.trainerview',
+			{
+				enable : !this.props._trainerViewEnabled
+			}));
+			this._doToggleTrainerView();
+	}
+
 
     _onShortcutToggleFullScreen: () => void;
 
@@ -1170,6 +1198,8 @@ class Toolbox extends Component<Props, State> {
                 );
             case 'tileview':
                 return <TileViewButton showLabel = { true } />;
+			case 'trainerview':
+				return <TrainerViewButton showLabel = {true} />;
             case 'localrecording':
                 return (
                     <OverflowMenuItem
@@ -1279,6 +1309,10 @@ class Toolbox extends Component<Props, State> {
         if (this._shouldShowButton('tileview')) {
             buttonsRight.push('tileview');
         }
+		if (this._shouldShowButton('trainerview')) {
+			buttonsRight.push('trainerview');
+		}
+
         if (this._shouldShowButton('localrecording')) {
             buttonsRight.push('localrecording');
         }
@@ -1355,6 +1389,8 @@ class Toolbox extends Component<Props, State> {
                                 this._onToolbarOpenLocalRecordingInfoDialog
                             } />
                     }
+					{ buttonsRight.indexOf('trainerview') !== -1
+						&& <TrainerViewButton />					}
                     { buttonsRight.indexOf('tileview') !== -1
                         && <TileViewButton /> }
                     { buttonsRight.indexOf('invite') !== -1
@@ -1445,6 +1481,7 @@ function _mapStateToProps(state) {
         _isVpaasMeeting: isVpaasMeeting(state),
         _fullScreen: fullScreen,
         _tileViewEnabled: shouldDisplayTileView(state),
+		_trainerViewEnabled: shouldDisplayTrainerView(state),
         _localParticipantID: localParticipant.id,
         _localRecState: localRecordingStates,
         _locked: locked,

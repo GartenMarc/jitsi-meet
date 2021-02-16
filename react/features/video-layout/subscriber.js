@@ -24,7 +24,21 @@ StateListenerRegistry.register(
         dispatch(selectParticipant());
     }
 );
+StateListenerRegistry.register(
+    state => state['features/video-layout'].trainerViewEnabled,
+    /* listener */ (trainerViewEnabled, store) => {
+        const { dispatch } = store;
 
+        dispatch(selectParticipant());
+    }
+)
+StateListenerRegistry.register(
+	state => state['features/video-layout'].trainerViewActive,
+	(trainerViewActive, store) => {
+		const { dispatch } = store;
+		dispatch(selectParticipant());
+	}
+)
 /**
  * For auto-pin mode, listen for changes to the known media tracks and look
  * for updates to screen shares. The listener is debounced to avoid state

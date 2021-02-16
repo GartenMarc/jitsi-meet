@@ -65,7 +65,7 @@
     }
 
     .item {
-        background: #fff;
+        background: rgba(255,255,255,.5);
         box-sizing: border-box;
         border-radius: 4px;
         display: inline-flex;
@@ -126,7 +126,7 @@
         }
 
         &.with-click-handler:hover {
-            background-color: #c7ddff;
+            background-color: #6ab023;
         }
 
         .add-button {
@@ -154,7 +154,7 @@
         position: absolute;
 
         &> svg {
-            fill: #0074e0;
+            fill: rgba(255,255,255,.5);
         }
     }
 
