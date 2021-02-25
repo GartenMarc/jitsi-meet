@@ -15,7 +15,7 @@ import { reportError } from './helpers';
  */
 export function parseURLParams(
         url: URL,
-        dontParse: boolean = false,
+        dontParse: boolean = true,
         source: string = 'hash'): Object {
     const paramStr = source === 'search' ? url.search : url.hash;
     const params = {};

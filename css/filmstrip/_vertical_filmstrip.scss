@@ -73,6 +73,14 @@
             width: 100%;
         }
     }
+    
+    @media only screen and (max-width: 500px){
+        #filmstripLocalVideo {
+            display: none !important;
+        }
+
+    }    
+
 
     /**
      * Re-styles the local Video to better fit vertical filmstrip layout.
@@ -91,9 +99,8 @@
             .videocontainer {
                 height: 0px;
                 width: 100%;
-    }
+            }
         }
-
     }
 
     /**
@@ -188,3 +195,4 @@
 @supports (-ms-ime-align:auto) {
     @include undoColumnReverseVideos();
 }
+

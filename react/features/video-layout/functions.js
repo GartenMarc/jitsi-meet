@@ -81,7 +81,7 @@ export function shouldDisplayTileView(state: Object = {}) {
 	const participantCount = getParticipantCount(state);
 
 	const isModerator = isLocalParticipantModerator(state);
-
+    
 
 
 
@@ -110,6 +110,13 @@ export function shouldDisplayTileView(state: Object = {}) {
 
 	// None tile view mode is easier to calculate (no need for many negations), so we do
 	// that and negate it only once.
+    declare var interfaceConfig: Object;
+    const visibleButtons = new Set(interfaceConfig.TOOLBAR_BUTTONS);
+    const trainerViewEnabled = visibleButtons.has('trainerview') ? true : false;
+    if (trainerViewEnabled && !isModerator){
+        return false
+    }
+        
 	const shouldDisplayNormalMode = Boolean(
 
 		// Reasons for normal mode:
@@ -121,7 +128,7 @@ export function shouldDisplayTileView(state: Object = {}) {
 		|| getPinnedParticipant(state)
 
 		// It's a 1-on-1 meeting
-		/*|| participantCount < 3*/
+		|| participantCount < 3
 
 		// There is a shared YouTube video in the meeting
 		|| isYoutubeVideoPlaying(state)
@@ -129,7 +136,6 @@ export function shouldDisplayTileView(state: Object = {}) {
 		// We want jibri to use stage view by default
 		|| iAmRecorder
 
-		|| !isModerator
 	);
 
 	return !shouldDisplayNormalMode;

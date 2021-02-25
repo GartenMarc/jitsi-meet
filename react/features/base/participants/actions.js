@@ -22,10 +22,13 @@ import {
     getNormalizedDisplayName,
     getParticipantDisplayName,
     getParticipantById,
-    isMoreThanOneModeratorActive
+    isMoreOrOneModeratorActive
 } from './functions';
 import logger from './logger';
-import { setTileView } from '../../video-layout/actions';
+import { setFollowMe } from '../conference';
+import { isFollowMeActive } from '../../follow-me'
+
+declare var interfaceConfig: Object;
 
 /**
  * Create an action for when dominant speaker changes.
@@ -183,11 +186,16 @@ export function localParticipantLeft() {
 export function localParticipantRoleChanged(role) {
     return (dispatch, getState) => {
         const participant = getLocalParticipant(getState);
-		logger.log("XXXXX inside")
-		if (participant.role === PARTICIPANT_ROLE.MODERATOR && !isMoreThanOneModeratorActive(getState)){
-			logger.log("XXXXX inside two")
-			setTileView(true);
-		}
+        const visibleButtons = new Set(interfaceConfig.TOOLBAR_BUTTONS);
+        const trainerViewEnabled = visibleButtons.has('trainerview') ? true : false;
+        if (trainerViewEnabled) {
+            const checkMod = isMoreOrOneModeratorActive(getState);
+            const checkFollow = isFollowMeActive(getState);
+
+            if (role == PARTICIPANT_ROLE.MODERATOR && !checkMod && !checkFollow) {
+                dispatch(setFollowMe(true));
+            }
+        }
         if (participant) {
             return dispatch(participantRoleChanged(participant.id, role));
         }
@@ -272,7 +280,7 @@ export function participantJoined(participant) {
             = getState()['features/base/conference'];
 
         if (conference === stateFeaturesBaseConference.conference
-                || conference === stateFeaturesBaseConference.joining) {
+            || conference === stateFeaturesBaseConference.joining) {
             return dispatch({
                 type: PARTICIPANT_JOINED,
                 participant
@@ -419,7 +427,6 @@ export function participantPresenceChanged(id, presence) {
  * }}
  */
 export function participantRoleChanged(id, role) {
-	
     return participantUpdated({
         id,
         role

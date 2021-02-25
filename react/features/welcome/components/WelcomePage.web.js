@@ -10,6 +10,8 @@ import { connect } from '../../base/redux';
 import { CalendarList } from '../../calendar-sync';
 import { RecentList } from '../../recent-list';
 import { SettingsButton, SETTINGS_TABS } from '../../settings';
+import * as Keycloak from 'keycloak-js';
+import axios from 'axios';
 
 import { AbstractWelcomePage, _mapStateToProps } from './AbstractWelcomePage';
 import Tabs from './Tabs';
@@ -20,20 +22,24 @@ import Tabs from './Tabs';
  */
 export const ROOM_NAME_VALIDATE_PATTERN_STR = '^[^?&:\u0022\u0027%#]+$';
 
+
 /**
  * The Web container rendering the welcome page.
  *
  * @extends AbstractWelcomePage
  */
 class WelcomePage extends AbstractWelcomePage {
+    checker: ?boolean;
+    keycloak: Object;
     /**
      * Default values for {@code WelcomePage} component's properties.
      *
      * @static
      */
     static defaultProps = {
-        _room: ''
+        _room: '',
     };
+
 
     /**
      * Initializes a new WelcomePage instance.
@@ -51,6 +57,8 @@ class WelcomePage extends AbstractWelcomePage {
                 interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE,
             selectedTab: 0
         };
+
+        this.checker = this.keycloakVerification();
 
         /**
          * The HTML Element used as the container for additional content. Used
@@ -108,14 +116,17 @@ class WelcomePage extends AbstractWelcomePage {
         this._onFormSubmit = this._onFormSubmit.bind(this);
         this._onRoomChange = this._onRoomChange.bind(this);
         this._setAdditionalCardRef = this._setAdditionalCardRef.bind(this);
-        this._setAdditionalContentRef
-            = this._setAdditionalContentRef.bind(this);
+        this._setAdditionalContentRef = this._setAdditionalContentRef.bind(this);
         this._setRoomInputRef = this._setRoomInputRef.bind(this);
-        this._setAdditionalToolbarContentRef
-            = this._setAdditionalToolbarContentRef.bind(this);
+        this._setAdditionalToolbarContentRef = this._setAdditionalToolbarContentRef.bind(this);
         this._onTabSelected = this._onTabSelected.bind(this);
         this._renderFooter = this._renderFooter.bind(this);
+        this.keycloakVerification = this.keycloakVerification.bind(this);
+        this._triggerLogout = this._triggerLogout.bind(this);
+        this._redirectLogin = this._redirectLogin.bind(this)
+
     }
+
 
     /**
      * Implements React's {@link Component#componentDidMount()}. Invoked
@@ -164,6 +175,52 @@ class WelcomePage extends AbstractWelcomePage {
         document.body.classList.remove('welcome-page');
     }
 
+    /**binastar additional content
+    * keycloak verification function
+     */
+    keycloakVerification() {
+
+        /*axios.get('https://openid.meet.binastar.de/api/keycloak.json').then(function(response) {
+            const keycloak = Keycloak({
+                url: response.data["auth-server-url"],
+                realm: response.data["realm"],
+                clientId: response.data["resource"],
+                redirectUri: response.data["redirectUrl"]
+            });*/
+        const keycloak = Keycloak({
+            url: "https://auth.meet.binastar.de/auth/",
+            realm: "customer-meet",
+            clientId: "customer-meet-binastar-de",
+            redirectUri: "https://customer.meet.binastar.de"
+        });
+
+        keycloak.init({ onLoad: "check-sso", checkLoginIframe: false }).then((auth) => {
+            if (!auth) {
+                this.cheker = false;
+            } else {
+                this.checker = true;
+                localStorage.setItem("binastar-token", keycloak.token);
+                localStorage.setItem("binastar-refresh-token", keycloak.refreshToken);
+                setTimeout(() => {
+                    keycloak.updateToken(70).then((refreshed) => {
+                        if (refreshed) {
+                            console.log("Token refreshed")
+                        } else {
+                            console.log("Token not refreshed, valid for " +
+                                Math.round(keycloak.tokenParsed.exp + keycloak.timeSkew - new Date().getTime() / 1000) + " seconds")
+                        }
+                    }).catch(() => {
+                        console.log("token not refreshed")
+                    })
+                }, 60000)
+                    ;
+            }
+            this.keycloak = keycloak
+
+        })
+        /* })*/
+    }
+
     /**
      * Implements React's {@link Component#render()}.
      *
@@ -176,105 +233,229 @@ class WelcomePage extends AbstractWelcomePage {
         const showAdditionalCard = this._shouldShowAdditionalCard();
         const showAdditionalContent = this._shouldShowAdditionalContent();
         const showAdditionalToolbarContent = this._shouldShowAdditionalToolbarContent();
+        if (this.keycloak !== undefined) {
+            const keycloak = this.keycloak;
+            if (keycloak.authenticated) {
+                return (
+                    <div
+                        className={`welcome ${showAdditionalContent
+                            ? 'with-content' : 'without-content'}`}
+                        id='welcome_page' >
+                        <div className='welcome-watermark'>
+                            <Watermarks defaultJitsiLogoURL={DEFAULT_WELCOME_PAGE_LOGO_URL} />
+                        </div>
 
+
+                        <div className='header'>
+                            <div className='welcome-page-settings'>
+                                <SettingsButton
+                                    defaultTab={SETTINGS_TABS.CALENDAR} />
+                                {showAdditionalToolbarContent
+                                    ? <div
+                                        className='settings-toolbar-content'
+                                        ref={this._setAdditionalToolbarContentRef} />
+                                    : null
+                                }
+                            </div>
+                            <div className='header-image' />
+                            <div className='header-container'>
+                                <h1 className='header-text-title'>
+                                    {t('welcomepage.headerTitle')}
+                                </h1>
+                                <span className='header-text-subtitle'>
+                                    {t('welcomepage.headerSubtitle')}
+                                </span>
+                                <div id='enter_room'>
+                                    <div className='enter-room-input-container'>
+                                        <form onSubmit={this._onFormSubmit}>
+                                            <input
+                                                aria-disabled='false'
+                                                aria-label='Meeting name input'
+                                                autoFocus={true}
+                                                className='enter-room-input'
+                                                id='enter_room_field'
+                                                onChange={this._onRoomChange}
+                                                pattern={ROOM_NAME_VALIDATE_PATTERN_STR}
+                                                placeholder={this.state.roomPlaceholder}
+                                                ref={this._setRoomInputRef}
+                                                title={t('welcomepage.roomNameAllowedChars')}
+                                                type='text'
+                                                value={this.state.room} />
+                                            <div
+                                                className={_moderatedRoomServiceUrl
+                                                    ? 'warning-with-link'
+                                                    : 'warning-without-link'}>
+                                                {this._renderInsecureRoomNameWarning()}
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <button
+                                        aria-disabled='false'
+                                        aria-label='Start meeting'
+                                        className='welcome-page-button'
+                                        id='enter_room_button'
+                                        onClick={this._onFormSubmit}
+                                        tabIndex='0'
+                                        type='button'>
+                                        {t('welcomepage.startMeetingLoggedIn')}
+                                    </button>
+                                </div>
+
+                                {_moderatedRoomServiceUrl && (
+                                    <div id='moderated-meetings'>
+                                        <p>
+                                            {
+                                                translateToHTML(
+                                                    t, 'welcomepage.moderatedMessage', { url: _moderatedRoomServiceUrl })
+                                            }
+                                        </p>
+                                    </div>)}
+                            </div>
+                        </div>
+
+                        <div className='welcome-cards-container'>
+                            <div className='welcome-card-row'>
+                                <div className='welcome-tabs welcome-card welcome-card--blue'>
+                                    {this._renderTabs()}
+                                </div>
+                                {showAdditionalCard
+                                    ? <div
+                                        className='welcome-card welcome-card--dark'
+                                        ref={this._setAdditionalCardRef} />
+                                    : null}
+                            </div>
+                            <div id="login-button" class="logged-in" onClick={this._triggerLogout}>Logout</div>
+
+                            {showAdditionalContent
+                                ? <div
+                                    className='welcome-page-content'
+                                    ref={this._setAdditionalContentRef} />
+                                : null}
+                        </div>
+                        {DISPLAY_WELCOME_FOOTER && this._renderFooter()}
+                    </div>
+                );
+            }
+        }
         return (
             <div
-                className = { `welcome ${showAdditionalContent
-                    ? 'with-content' : 'without-content'}` }
-                id = 'welcome_page'>
-                <div className = 'welcome-watermark'>
-                    <Watermarks defaultJitsiLogoURL = { DEFAULT_WELCOME_PAGE_LOGO_URL } />
+                className={`welcome ${showAdditionalContent
+                    ? 'with-content' : 'without-content'}`}
+                id='welcome_page' >
+                <div className='welcome-watermark'>
+                    <Watermarks defaultJitsiLogoURL={DEFAULT_WELCOME_PAGE_LOGO_URL} />
                 </div>
-
-                <div className = 'header'>
-                    <div className = 'welcome-page-settings'>
+                <div className='header'>
+                    <div className='welcome-page-settings'>
                         <SettingsButton
-                            defaultTab = { SETTINGS_TABS.CALENDAR } />
-                        { showAdditionalToolbarContent
+                            defaultTab={SETTINGS_TABS.CALENDAR} />
+                        {showAdditionalToolbarContent
                             ? <div
-                                className = 'settings-toolbar-content'
-                                ref = { this._setAdditionalToolbarContentRef } />
+                                className='settings-toolbar-content'
+                                ref={this._setAdditionalToolbarContentRef} />
                             : null
                         }
                     </div>
-                    <div className = 'header-image' />
-                    <div className = 'header-container'>
-                        <h1 className = 'header-text-title'>
-                            { t('welcomepage.headerTitle') }
+                    <div className='header-image' />
+                    <div className='header-container'>
+                        <h1 className='header-text-title'>
+                            {t('welcomepage.headerTitle')}
                         </h1>
-                        <span className = 'header-text-subtitle'>
-                            { t('welcomepage.headerSubtitle')}
+                        <span className='header-text-subtitle'>
+                            {t('welcomepage.headerSubtitle')}
                         </span>
-                        <div id = 'enter_room'>
-                            <div className = 'enter-room-input-container'>
-                                <form onSubmit = { this._onFormSubmit }>
+                        <div id='enter_room'>
+                            <div className='enter-room-input-container'>
+                                <form onSubmit={this._onFormSubmit}>
                                     <input
-                                        aria-disabled = 'false'
-                                        aria-label = 'Meeting name input'
-                                        autoFocus = { true }
-                                        className = 'enter-room-input'
-                                        id = 'enter_room_field'
-                                        onChange = { this._onRoomChange }
-                                        pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
-                                        placeholder = { this.state.roomPlaceholder }
-                                        ref = { this._setRoomInputRef }
-                                        title = { t('welcomepage.roomNameAllowedChars') }
-                                        type = 'text'
-                                        value = { this.state.room } />
+                                        aria-disabled='false'
+                                        aria-label='Meeting name input'
+                                        autoFocus={true}
+                                        className='enter-room-input'
+                                        id='enter_room_field'
+                                        onChange={this._onRoomChange}
+                                        pattern={ROOM_NAME_VALIDATE_PATTERN_STR}
+                                        placeholder={this.state.roomPlaceholder}
+                                        ref={this._setRoomInputRef}
+                                        title={t('welcomepage.roomNameAllowedChars')}
+                                        type='text'
+                                        value={this.state.room} />
                                     <div
-                                        className = { _moderatedRoomServiceUrl
+                                        className={_moderatedRoomServiceUrl
                                             ? 'warning-with-link'
-                                            : 'warning-without-link' }>
-                                        { this._renderInsecureRoomNameWarning() }
+                                            : 'warning-without-link'}>
+                                        {this._renderInsecureRoomNameWarning()}
                                     </div>
                                 </form>
                             </div>
                             <button
-                                aria-disabled = 'false'
-                                aria-label = 'Start meeting'
-                                className = 'welcome-page-button'
-                                id = 'enter_room_button'
-                                onClick = { this._onFormSubmit }
-                                tabIndex = '0'
-                                type = 'button'>
-                                { t('welcomepage.startMeeting') }
+                                aria-disabled='false'
+                                aria-label='Start meeting'
+                                className='welcome-page-button'
+                                id='enter_room_button'
+                                onClick={this._onFormSubmit}
+                                tabIndex='0'
+                                type='button'>
+                                {t('welcomepage.startMeetingLoggedOut')}
                             </button>
                         </div>
 
-                        { _moderatedRoomServiceUrl && (
-                            <div id = 'moderated-meetings'>
+                        {_moderatedRoomServiceUrl && (
+                            <div id='moderated-meetings'>
                                 <p>
                                     {
                                         translateToHTML(
-                                        t, 'welcomepage.moderatedMessage', { url: _moderatedRoomServiceUrl })
+                                            t, 'welcomepage.moderatedMessage', { url: _moderatedRoomServiceUrl })
                                     }
                                 </p>
                             </div>)}
                     </div>
                 </div>
 
-                <div className = 'welcome-cards-container'>
-                    <div className = 'welcome-card-row'>
-                        <div className = 'welcome-tabs welcome-card welcome-card--blue'>
-                            { this._renderTabs() }
+                <div className='welcome-cards-container'>
+                    <div className='welcome-card-row'>
+                        <div id='customer-options'>
+                            <div class='text-center'>
+                                <h3>Noch kein Benutzerkonto?</h3>
+                                <p>BinaStar Meet Produkt buchen und <u>sofort</u> loslegen!</p>
+                                <ul>
+                                    <li class='check'>DSGVO-konform (Server in Deutschland)</li>
+                                    <li class='check'>Stabilität durch Open Source-Basis</li>
+                                    <li class='check'>Sicherheit durch Ende-zu-Ende Verschlüsselung</li>
+                                </ul>
+                                <p class='center'>
+                                    <a href='https://www.binastar.de/produkte/videokonferenzen/' target='_blank'>Alle Infos und Produkte</a>
+                                </p>
+                            </div>
+                            <div id='products'>
+                            </div>
                         </div>
-                        { showAdditionalCard
-                            ? <div
-                                className = 'welcome-card welcome-card--dark'
-                                ref = { this._setAdditionalCardRef } />
-                            : null }
                     </div>
+                    <div id="login-button" class="logged-out" onClick={this._redirectLogin}>Login</div>
 
-                    { showAdditionalContent
+                    {showAdditionalContent
                         ? <div
-                            className = 'welcome-page-content'
-                            ref = { this._setAdditionalContentRef } />
-                        : null }
+                            className='welcome-page-content'
+                            ref={this._setAdditionalContentRef} />
+                        : null}
                 </div>
-                { DISPLAY_WELCOME_FOOTER && this._renderFooter()}
+                {DISPLAY_WELCOME_FOOTER && this._renderFooter()}
             </div>
-
         );
+
+    };
+
+
+    _redirectLogin(event) {
+        event.preventDefault();
+        const url = "https://auth.meet.binastar.de/auth/realms/customer-meet/protocol/openid-connect/auth?client_id=customer-meet-binastar-de&redirect_uri=https%3A%2F%2Fcustomer.meet.binastar.de&response_type=code&scope=openid";
+        location.href = url;
+    }
+
+    _triggerLogout(event) {
+        event.preventDefault()
+        console.log(this.keycloak);
+        this.keycloak.logout();
     }
 
     /**
@@ -284,10 +465,10 @@ class WelcomePage extends AbstractWelcomePage {
      */
     _doRenderInsecureRoomNameWarning() {
         return (
-            <div className = 'insecure-room-name-warning'>
-                <Icon src = { IconWarning } />
+            <div className='insecure-room-name-warning'>
+                <Icon src={IconWarning} />
                 <span>
-                    { this.props.t('security.insecureRoomNameWarning') }
+                    {this.props.t('security.insecureRoomNameWarning')}
                 </span>
             </div>
         );
@@ -296,14 +477,17 @@ class WelcomePage extends AbstractWelcomePage {
     /**
      * Prevents submission of the form and delegates join logic.
      *
-     * @param {Event} event - The HTML Event which details the form submission.
-     * @private
-     * @returns {void}
-     */
+    * @param {Event} event - The HTML Event which details the form submission.
+        * @private
+    * @returns {void}
+        */
     _onFormSubmit(event) {
         event.preventDefault();
-
         if (!this._roomInputRef || this._roomInputRef.reportValidity()) {
+            if (this.keycloak !== undefined && this.keycloak.authenticated) {
+                this._onJoin(this.keycloak);
+                return
+            }
             this._onJoin();
         }
     }
@@ -314,10 +498,10 @@ class WelcomePage extends AbstractWelcomePage {
      *
      * @inheritdoc
      * @override
-     * @param {Event} event - The (HTML) Event which details the change such as
-     * the EventTarget.
-     * @protected
-     */
+    * @param {Event} event - The (HTML) Event which details the change such as
+            * the EventTarget.
+            * @protected
+            */
     _onRoomChange(event) {
         super._onRoomChange(event.target.value);
     }
@@ -325,11 +509,11 @@ class WelcomePage extends AbstractWelcomePage {
     /**
      * Callback invoked when the desired tab to display should be changed.
      *
-     * @param {number} tabIndex - The index of the tab within the array of
-     * displayed tabs.
-     * @private
-     * @returns {void}
-     */
+    * @param {number} tabIndex - The index of the tab within the array of
+        * displayed tabs.
+        * @private
+    * @returns {void}
+        */
     _onTabSelected(tabIndex) {
         this.setState({ selectedTab: tabIndex });
     }
@@ -337,8 +521,8 @@ class WelcomePage extends AbstractWelcomePage {
     /**
      * Renders the footer.
      *
-     * @returns {ReactElement}
-     */
+    * @returns {ReactElement}
+        */
     _renderFooter() {
         const { t } = this.props;
         const {
@@ -347,25 +531,25 @@ class WelcomePage extends AbstractWelcomePage {
             MOBILE_DOWNLOAD_LINK_IOS
         } = interfaceConfig;
 
-        return (<footer className = 'welcome-footer'>
-            <div className = 'welcome-footer-centered'>
-                <div className = 'welcome-footer-padded'>
-                    <div className = 'welcome-footer-row-block welcome-footer--row-1'>
-                        <div className = 'welcome-footer-row-1-text'>{t('welcomepage.jitsiOnMobile')}</div>
+        return (<footer className='welcome-footer'>
+            <div className='welcome-footer-centered'>
+                <div className='welcome-footer-padded'>
+                    <div className='welcome-footer-row-block welcome-footer--row-1'>
+                        <div className='welcome-footer-row-1-text'>{t('welcomepage.jitsiOnMobile')}</div>
                         <a
-                            className = 'welcome-badge'
-                            href = { MOBILE_DOWNLOAD_LINK_IOS }>
-                            <img src = './images/app-store-badge.png' />
+                            className='welcome-badge'
+                            href={MOBILE_DOWNLOAD_LINK_IOS}>
+                            <img src='./images/app-store-badge.png' />
                         </a>
                         <a
-                            className = 'welcome-badge'
-                            href = { MOBILE_DOWNLOAD_LINK_ANDROID }>
-                            <img src = './images/google-play-badge.png' />
+                            className='welcome-badge'
+                            href={MOBILE_DOWNLOAD_LINK_ANDROID}>
+                            <img src='./images/google-play-badge.png' />
                         </a>
                         <a
-                            className = 'welcome-badge'
-                            href = { MOBILE_DOWNLOAD_LINK_F_DROID }>
-                            <img src = './images/f-droid-badge.png' />
+                            className='welcome-badge'
+                            href={MOBILE_DOWNLOAD_LINK_F_DROID}>
+                            <img src='./images/f-droid-badge.png' />
                         </a>
                     </div>
                 </div>
@@ -377,8 +561,8 @@ class WelcomePage extends AbstractWelcomePage {
      * Renders tabs to show previous meetings and upcoming calendar events. The
      * tabs are purposefully hidden on mobile browsers.
      *
-     * @returns {ReactElement|null}
-     */
+    * @returns {ReactElement | null}
+        */
     _renderTabs() {
         if (isMobileBrowser()) {
             return null;
@@ -408,20 +592,20 @@ class WelcomePage extends AbstractWelcomePage {
 
         return (
             <Tabs
-                onSelect = { this._onTabSelected }
-                selected = { this.state.selectedTab }
-                tabs = { tabs } />);
+                onSelect={this._onTabSelected}
+                selected={this.state.selectedTab}
+                tabs={tabs} />);
     }
 
     /**
      * Sets the internal reference to the HTMLDivElement used to hold the
      * additional card shown near the tabs card.
      *
-     * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
-     * of the welcome page content.
-     * @private
-     * @returns {void}
-     */
+    * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
+                * of the welcome page content.
+                * @private
+    * @returns {void}
+                */
     _setAdditionalCardRef(el) {
         this._additionalCardRef = el;
     }
@@ -430,11 +614,11 @@ class WelcomePage extends AbstractWelcomePage {
      * Sets the internal reference to the HTMLDivElement used to hold the
      * welcome page content.
      *
-     * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
-     * of the welcome page content.
-     * @private
-     * @returns {void}
-     */
+    * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
+        * of the welcome page content.
+        * @private
+    * @returns {void}
+        */
     _setAdditionalContentRef(el) {
         this._additionalContentRef = el;
     }
@@ -443,11 +627,11 @@ class WelcomePage extends AbstractWelcomePage {
      * Sets the internal reference to the HTMLDivElement used to hold the
      * toolbar additional content.
      *
-     * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
-     * of the additional toolbar content.
-     * @private
-     * @returns {void}
-     */
+    * @param {HTMLDivElement} el - The HTMLElement for the div that is the root
+        * of the additional toolbar content.
+        * @private
+    * @returns {void}
+        */
     _setAdditionalToolbarContentRef(el) {
         this._additionalToolbarContentRef = el;
     }
@@ -456,10 +640,10 @@ class WelcomePage extends AbstractWelcomePage {
      * Sets the internal reference to the HTMLInputElement used to hold the
      * welcome page input room element.
      *
-     * @param {HTMLInputElement} el - The HTMLElement for the input of the room name on the welcome page.
-     * @private
-     * @returns {void}
-     */
+    * @param {HTMLInputElement} el - The HTMLElement for the input of the room name on the welcome page.
+        * @private
+    * @returns {void}
+        */
     _setRoomInputRef(el) {
         this._roomInputRef = el;
     }
@@ -468,8 +652,8 @@ class WelcomePage extends AbstractWelcomePage {
      * Returns whether or not an additional card should be displayed near the tabs.
      *
      * @private
-     * @returns {boolean}
-     */
+    * @returns {boolean}
+        */
     _shouldShowAdditionalCard() {
         return interfaceConfig.DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD
             && this._additionalCardTemplate
@@ -482,8 +666,8 @@ class WelcomePage extends AbstractWelcomePage {
      * the welcome page's header for entering a room name.
      *
      * @private
-     * @returns {boolean}
-     */
+    * @returns {boolean}
+        */
     _shouldShowAdditionalContent() {
         return interfaceConfig.DISPLAY_WELCOME_PAGE_CONTENT
             && this._additionalContentTemplate
@@ -496,8 +680,8 @@ class WelcomePage extends AbstractWelcomePage {
      * the header toolbar.
      *
      * @private
-     * @returns {boolean}
-     */
+    * @returns {boolean}
+        */
     _shouldShowAdditionalToolbarContent() {
         return interfaceConfig.DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT
             && this._additionalToolbarContentTemplate

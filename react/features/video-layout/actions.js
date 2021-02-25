@@ -40,7 +40,6 @@ export function setParticipantsWithScreenShare(participantIds: Array<string>) {
  * }}
  */
 export function setTileView(enabled: ?boolean) {
-	console.log("inside setTileView" + enabled)
 	return {
 		type: SET_TILE_VIEW,
 		enabled
@@ -99,7 +98,6 @@ export function switchTrainerViewBody(enabled: ?boolean) {
  * @returns {Function}
  */
 export function toggleTileView() {
-	console.log("should togle tileView");
 	return (dispatch: Dispatch<any>, getState: Function) => {
 		const state = getState();
 		const tileViewActive = shouldDisplayTileView(state);
@@ -128,7 +126,6 @@ export function toggleActivateTrainerView() {
 	return (dispatch: Dispatch<any>, getState: Function) => {
 		const state = getState()
 		const isActive = isTrainerActive(state);
-		conosle.log("trainerView is akive: " + isActive)
 		dispatch(activateTrainerView(!isActive));
 	}
 }

@@ -2,9 +2,8 @@
 
 import {
     getParticipantCountWithFake,
-    getPinnedParticipant,
- 	getLocalParticipant,
-	PARTICIPANT_ROLE
+    getLocalParticipant,
+    PARTICIPANT_ROLE
 } from '../base/participants';
 import { toState } from '../base/redux';
 
@@ -49,13 +48,19 @@ export function shouldRemoteVideosBeVisible(state: Object) {
     // as it is assumed all participants, including fake, will be displayed
     // in the filmstrip.
     const participantCount = getParticipantCountWithFake(state);
-    let pinnedParticipant;
-	const localParticipant = getLocalParticipant(state);
-    const isModerator = localParticipant.role === PARTICIPANT_ROLE.MODERATOR
-
-    return Boolean(
-		participantCount > 2 && isModerator )
-        /*participantCount > 2
+    const localParticipant = getLocalParticipant(state);
+    const isModerator = localParticipant.role === PARTICIPANT_ROLE.MODERATOR ? true : false;
+    const visibleButtons = new Set(interfaceConfig.TOOLBAR_BUTTONS);
+    const trainerViewEnabled = visibleButtons.has('trainerview') ? true : false;
+    if (trainerViewEnabled) {
+        if (isModerator && participantCount > 2) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        return Boolean(
+            participantCount > 2
 
             // Always show the filmstrip when there is another participant to
             // show and the filmstrip is hovered, or local video is pinned, or
@@ -66,8 +71,8 @@ export function shouldRemoteVideosBeVisible(state: Object) {
                     || ((pinnedParticipant = getPinnedParticipant(state))
                         && pinnedParticipant.local)))
 
-            || state['features/base/config'].disable1On1Mode);*/
-
+            || state['features/base/config'].disable1On1Mode);
+    }
 }
 
 /**

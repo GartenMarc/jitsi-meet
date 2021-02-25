@@ -1,0 +1,698 @@
+@font-face {
+    font-family: "RobotoCondensed";
+    src: url("../fonts/RobotoCondensed/RobotoCondensed-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("../fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@keyframes open {
+  from {max-height: calc( (1.6em)*3);}
+  to {max-height: calc( (1.6em)*15);}
+}
+
+@keyframes close {
+  from {max-height: calc( (1.6em)*15);}
+  to {max-height: calc( (1.6em)*3);}
+}
+
+html, body, button, input, keygen, select, textarea {
+    font-family: "Roboto", Helvetica, Arial, Verdana, sans-serif;
+}
+
+body{
+    background-color:#f2f2f2!important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif;
+    color: #363636!important;
+}
+
+.welcome {
+	background-color:#f2f2f2!important;
+    background: none;
+    width: 100%;
+}
+
+.welcome .header{
+	background-color: transparent!important;
+	height: auto;
+	min-height: 325px;
+}
+
+.welcome .header .header-text-title {
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif;
+    color: #363636;
+    margin-top: 110px;
+}
+
+.welcome .header .header-text-subtitle {
+    font-family: "Roboto", Helvetica, Arial, Verdana, sans-serif;
+    color: #363636;
+}
+
+.welcome .jitsi-icon svg {
+    fill: #6ab023;
+}
+
+.welcome .welcome-page-button {
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif !important;
+    color: #fff;
+    background-color: #6ab023;
+    border-radius: 3px;
+    padding: 13px 20px;
+    font-size: 1.75em;
+}
+
+.welcome .header #enter_room {
+    background-color: transparent;
+}
+
+.welcome .welcome-watermark .watermark.leftwatermark{
+    display: none;
+}
+
+.header-container{
+	background-image: url(../img/binastar-logo.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+    min-height:450px;
+}
+
+#login-button {
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif;
+    color: #fff;
+    background-color: #6ab023;
+    padding: 5px 10px;
+    width: 100px;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 120%;
+    position: absolute;
+    top: 33px;
+    right: 200px;
+    font-weight: bold;
+}
+
+#login-button:hover {
+    cursor: pointer;
+}
+
+.welcome .header #enter_room .enter-room-input-container .enter-room-input{
+    border: 1px solid #ededed;
+    border-bottom: 1px solid #8a8d90;
+}
+
+.welcome .header #enter_room .enter-room-input-container .enter-room-input:hover{
+    border-bottom: 1px solid #6ab023;
+}
+
+.meetings-list{
+    width: 75%;
+    margin: 0 auto;
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif !important;
+}
+
+.meetings-list .meetings-list-empty .description {
+    color: #363636;
+    font-family: "Roboto", Helvetica, Arial, Verdana, sans-serif;
+    font-size: 1.2em;
+}
+
+.meetings-list .item.with-click-handler:hover{
+    background-color: #ccc;
+}
+
+.meetings-list .item .title{
+    font-size: 1.2em;
+}
+
+#login-button:hover {
+    cursor: pointer;
+}
+
+#footer {
+	float:left;
+	width: 100%;
+    text-align: center;
+    padding: 1em 0;
+}
+
+#footer a {
+    color: #6ab023;
+    margin-right: 2em;
+    font-size: 1.2em;
+}
+
+#footer a:last-child {
+    margin-right: 0;
+}
+
+.welcome-cards-container{
+	margin-top: 0;
+}
+
+/* .welcome .welcome-card{
+	display: none;
+} */
+
+#customer-options{
+	width: 100%;
+	font-size: 1.205em;
+}
+
+#customer-options a{
+    color: #6ab023;
+}	
+
+p.center{
+	text-align: center;
+}
+
+/* product styles */
+#products {
+    width: 99%;
+    margin: 3em 0.5% 0 0.5%;
+    float: left;
+}
+
+.wpb_column {
+    float: left;
+    width: 98%;
+    margin: 0 0 1em 0;
+    background: #fff;
+    border-top: 2px solid #6ab023;
+    box-shadow: 0 1px 1px rgba(3,3,3,.175);
+    padding: 0 1% 0 1%;
+}
+
+.priceplan .ult_pricing_table .ult_pricing_heading .price-heading{
+    text-align: center;
+    font-size: 2em;
+    margin: 0.5em 0 0 0;
+}
+
+.ult_pricing_table, .price-subheading{
+    text-align: center;
+    margin-top: 0.5em;
+}
+
+.ult_design_1 .ult_pricing_table .ult_price_body {
+    font-size: 2em;
+    line-height: 1em;
+}
+
+.ult_design_1 .ult_pricing_table .ult_price_body {
+    font-size: 16px;
+    width: 7.5em;
+    height: 7.5em;
+    padding: 0;
+    line-height: 1em;
+    border: 2px solid;
+    -webkit-border-radius: 500%;
+    border-radius: 500%;
+    border-color: #6ab023;
+}
+.ult_pricing_table .ult_price_body, .wpb_column > .wpb_wrapper > .ult_pricing_table_wrap .ult_pricing_table .ult_price_body {
+    display: table;
+    margin: 15px auto;
+}
+
+.ult_price_features{
+    max-height: calc( (1.6em)*3); /* equals 3 lines*/
+    overflow:hidden;
+    animation-fill-mode: forwards;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+}
+
+.ult_price_features ul{
+    margin: 0;
+    padding: 0 5%;
+}
+
+
+.ult_price_figure {
+    font-size: 2em;
+    text-align: center;
+    display: block;
+    letter-spacing: -2px;
+    margin-top: 1.5em;
+}
+
+.ult_price_body .ult_price .ult_price_term{
+    font-size: 0.75em;
+    position: relative;
+    top: 7px;
+}
+
+.ult_pricing_table .ult_price_features ul li {
+    list-style-type: none;
+    margin: 0;
+    text-decoration: none;
+    text-align: left;
+    padding: 0px 0 0 25px;
+    line-height: 1.75em;
+    font-size: 0.95em;
+}
+
+.ult_price_features ul li.trueplus {
+    background: url(../img/check-trueplus.png) no-repeat left center transparent;
+}
+
+.ult_price_features ul li.true, li.check {
+    background: url(../img/check-true.png) no-repeat left center transparent;
+}
+
+.ult_price_features ul li.false {
+    background: url(../img/check-false.png) no-repeat left center transparent;
+}
+
+.ult_price_features p{
+    font-size: 0.8em;
+    color: #ccc;
+    margin-bottom: 0.5em;
+}
+
+#kc-content-wrapper a.button, .ult_price_action_button{
+	background-color: #6ab023;
+    color: #fff !important;
+    width: 75%;
+    margin: 12px auto 5px auto;
+    display: block;
+    text-decoration: none;
+    font-family: "Roboto Condensed", Helvetica, Arial, Verdana, sans-serif;
+    font-size: 1.25em;
+    border-radius: 3px;
+    padding: 5px;
+    text-align: center;
+}
+
+#kc-content-wrapper a.button:hover, .ult_price_action_button:hover{
+	text-decoration: none;
+}
+
+.more-link{
+    font-size: .8em;
+    margin: 0.5em auto;
+    width: 6.5em;
+    padding-left: 17px;
+    text-align: left;
+}
+
+.more-link.closed{
+    background: url(../img/arrow-down.png) no-repeat left 1px transparent;
+}
+	
+.more-link.opened{
+	background: url(../img/arrow-up.png) no-repeat left 1px transparent;
+}
+
+.more-link:hover{
+    cursor: pointer;
+}
+
+.text-center{
+    width: 99%;
+    max-width: 340px;
+    margin: 0 auto;
+    position: relative;
+    top: 1em;
+    clear: both;
+    float: none;
+}
+
+.text-center ul{
+    padding: 0;
+}
+
+li.check{
+    list-style-type: none;
+    padding: 0 0 0 25px;
+    line-height: 1.75em
+}
+
+/* end product styles */
+
+.footer{
+    font-size: 0.8em;
+    text-align: center;
+    margin-top: 40px;
+    float:left;
+    width: 100%;
+}
+
+.footer ul{
+    padding: 0;
+}
+
+.footer ul li{
+    list-style-type: none;
+    display: inline;
+    padding: 2px 5px;   
+} 
+
+/* modal dialogs */
+
+/* main windows*/
+
+.tOoji{
+    background-color: transparent!important;
+    color: #363636!important;
+}
+
+.no-mobile-app__title{
+	border-bottom: 1px solid #6ab023!important;
+}
+
+.eoRGoR, .dialog .aui-dialog2-footer, .dialog .aui-dialog2-header, .dialog .aui-dialog2-content{
+    color: #6ab023!important;
+    background-color: #f2f2f2!important;
+    border-botton: 1px solid #6ab023!important;
+}
+
+.eoRGoR a{
+    color: #6ab023!important;
+}
+
+.invite-more-dialog.header, .embed-meeting-dialog-header{
+    font-family: "RobotoCondensed", Helvetica, Arial, Verdana, sans-serif;
+    color: #363636!important;
+}
+
+.large-video-labels{
+	right: 30px!important;
+}
+
+.video-quality-dialog .video-quality-dialog-contents .video-quality-dialog-label-container{
+    color: #363636!important;
+}
+
+.video-quality-dialog .video-quality-dialog-contents .video-quality-dialog-label-container.active{
+    color: #6ab023!important;
+}
+
+.security-dialog{
+    color: #363636!important;
+}
+
+.invite-more-dialog.header>div>svg{
+	fill: #bbb!important;
+}
+
+.invite-more-dialog{
+    color: #363636!important;
+}
+
+
+.copy-button{
+	background: #bbb!important;
+	color: #fff!important;	
+}
+
+.invite-more-dialog.email-container, .embed-meeting-trigger,.invite-more-dialog.icon-container.active, .button-control_primary, .dialog .input-control{
+    background: #6ab023!important;
+    color: #fff!important;  
+    border-color: #ccc!important;
+}
+
+.dialog .aui-dialog2-footer{
+	border-top: 1px solid #6ab023!important;
+}
+
+.invite-more-dialog.icon-container.active svg path{
+	fill: #fff!important;
+}
+
+.embed-meeting-code{
+    background: #6ab023!important;
+}
+
+.sc-cSHVUG.fserWm,.sc-cSHVUG.fserWm:hover, .sc-cSHVUG.kSZawh, .sc-cSHVUG.jECfaC{
+    background: #6ab023!important;
+    color: #fff!important;
+}
+
+.sc-cSHVUG.ceIglU, .sc-cSHVUG.gxzuWQ, .sc-cSHVUG.gxzuWQ, .sc-cSHVUG.jDvmPG{
+    background: #ededed!important;
+    color: #6ab023!important;	
+}
+
+.new-toolbox .toolbox-content .overflow-menu .overflow-menu-item:hover{
+	background: #ccc!important;
+}
+
+.hRySvC{
+	background: #6ab023!important;
+    background: #6ab023!important;
+    width: 30px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px!important;
+    padding: 0!important;
+}
+
+.button-control, .button-control:hover{
+    background: #ededed;
+    color: #6ab023;   
+}
+
+.device-selection .audio-input-preview{
+	background: #f2f2f2!important;
+	border: 1px solid #ccc;
+}
+
+.jXQlZM.jXQlZM, .jXQlZM.jXQlZM .modal-dialog-form ,.modal-dialog-form .cksvax[data-role=droplistContent]{
+    background: #6ab023!important;
+    color: #fff!important;
+}
+
+.device-selection .audio-input-preview .audio-input-preview-level{
+    background: #6ab023!important;
+}
+
+/* nav highlights */
+.iqNwPx{
+    color: #6ab023!important;
+}
+
+.bHNyBH{
+    background-color: #6ab023!important;
+}
+
+/* nav not highlighted */
+.oQiLZ{
+    color: #363636!important;
+}
+
+.modal-dialog-form .sc-cSHVUG{
+    color: #fff!important;
+    background: #6ab023!important;
+}
+
+/* hover button bottom */
+.modal-dialog-form .sc-cSHVUG:hover{
+    background: #6ab023!important;
+    color: #fff!important;
+}
+
+/* button */
+
+.ceIglU{
+    color: #363636!important;
+}
+
+.device-selection .device-selectors .device-selector-trigger{
+    background: #6ab023!important;
+    border-color: #ededed!important;
+    color: #fff!important;  
+}
+
+/* input */
+
+.jsYMHu, .jsYMHu.focus-visible, .dEUJGG{
+    background-color: #fff!important;
+    color: 363636!important;
+    border-color: #ededed!important;
+    border-color-bottom: #8a8d90!important;
+}
+
+/* conference */
+
+#largeVideoContainer{
+	background-color: #f2f2f2!important;
+}
+
+.videocontainer__background{
+    background-color: #bbb!important;
+}
+
+.new-toolbox .toolbox-content .button-group-center .toolbox-button .toolbox-icon.toggled{
+    background-color: #bbb!important;
+	border: 1px solid #fff;
+}
+
+#reloadProgressBar .progress-indicator-fill{
+    background: #6ab023!important;
+	
+}
+
+.settings-button-small-icon>svg{
+	fill: #bbb!important;
+}
+
+#sideToolbarContainer{
+    background-color: #6ab023!important;
+    color: #fff!important;
+}
+
+.chat-header{
+    background-color: #4f8a14!important;
+}
+
+.dvocAg, .exHNhk{
+	background-color: #fff!important;
+    color: #6ab023!important;
+    border-color: #ededed!important;
+}
+
+.audio-preview-content{
+    background: #6ab023!important;
+}
+
+.jitsi-icon.metr>svg{
+	fill: #ccc!important;
+}
+
+.smileys-panel #smileysContainer{
+    background-color: transparent!important;
+}
+
+#chat-input{
+	border-top: 1px solid #ededed!important;
+}
+
+#chat-input::placeholder, .dialog .input-control::placeholder{
+    color: #fff!important;
+} 
+
+#usermsg::placeholder {
+	color: #fff!important;
+}
+
+#nickname{
+    color: #fff!important;
+}
+
+.button-control_overlay{
+	background-color: #6ab023!important;
+    color: #fff!important;
+}
+
+.CvzNc{
+    background: #6ab023!important;
+    color: #fff!important;
+}
+
+.new-toolbox .toolbox-content .overflow-menu .overflow-menu-item{
+	color: #fff!important;
+}
+
+.new-toolbox .toolbox-content .overflow-menu .overflow-menu-item-icon svg{
+	fill: #fff!important;
+}
+
+.audio-preview-content .jitsi-icon svg path{
+    fill: #fff!important;
+ }
+ 
+ .audio-preview-entry--selected, .audio-preview-microphone:hover .audio-preview-entry{
+    background: #ccc!important;
+ }
+
+/* responsive */
+
+@media only screen and (min-width: 375px) {
+    #products {
+       width: 100%;
+       margin: 1em 0% 0 0%;
+    }
+    .wpb_column {
+       max-width: 430px;
+       float:none;
+       margin: 0 auto 1em auto;
+       padding: 0 0 10px 0;
+    }
+}   
+
+@media only screen and (min-width: 425px){
+    .welcome .welcome-watermark .watermark.leftwatermark{
+        display: block;
+    }
+    .header-container{
+        background-image: none;
+        min-height:auto;
+    }
+    .welcome .header .header-text-title {
+        margin-top: 0;   
+    }
+}
+
+@media only screen and (min-width: 600px) {
+
+    .wpb_column {
+       float: left;
+       width: 32.66%;
+       margin-right: 1%;
+    }
+    
+    .wpb_column:last-child {
+        margin-right: 0;
+    }
+}   
+
+
+@media only screen and (min-width: 768px) {
+    #products {
+       width: 96%;
+       margin: 3em 2% 0 2%;
+    }
+    .wpb_column {
+       float: left;
+       width: 32%;
+       margin-right: 2%;
+       max-width: none;
+    }
+    
+    .welcome {
+        background-image: url("../img/entspannte-videokonferenzen.jpg");
+        background-position: top left;
+        background-size: 20%;
+        background-repeat: no-repeat;
+    }
+    #customer-options {
+        margin-top: -50px;
+    }
+}   
+    
+@media only screen and (min-width: 1200px) {
+    #products {
+       width: 90%;
+       margin: 3em auto 0 auto;
+       max-width: 1200px;
+       float: none;
+    }
+    
+    .wpb_column {
+       width: 30.66%;
+       margin-right: 4%;
+    }
+
+    .ult_price_features ul{
+        padding: 0 8%;
+    }
+
+}

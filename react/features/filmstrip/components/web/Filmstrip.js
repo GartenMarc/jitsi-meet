@@ -370,6 +370,7 @@ function _mapStateToProps(state) {
     const { gridDimensions = {}, filmstripWidth } = state['features/filmstrip'].tileViewDimensions;
 
     return {
+        _className: className,
         _columns: gridDimensions.columns,
         _currentLayout: getCurrentLayout(state),
         _filmstripWidth: filmstripWidth,

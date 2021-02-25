@@ -57,7 +57,7 @@ export function getPropertyValue(
     if (sources.urlParams) {
         if (CONFIG_WHITELIST.indexOf(propertyName) !== -1) {
             const urlParams
-                = parseURLParams(state['features/base/connection'].locationURL);
+                = parseURLParams(state['features/base/connection'].locationURL, true);
             const value = urlParams[`config.${propertyName}`];
 
             if (typeof value !== 'undefined') {

@@ -86,10 +86,18 @@ class TileViewButton<P: Props> extends AbstractButton<P, *> {
  * @returns {Props}
  */
 function _mapStateToProps(state, ownProps) {
+   
     const enabled = getFeatureFlag(state, TILE_VIEW_ENABLED, true);
     const lonelyMeeting = getParticipantCount(state) < 2;
     const isModerator = isLocalParticipantModerator(state);
-    const { visible = enabled && !lonelyMeeting && isModerator } = ownProps;
+    declare var interfaceConfig: Object;
+    const visibleButtons = new Set(interfaceConfig.TOOLBAR_BUTTONS);
+    const trainerViewEnabled = visibleButtons.has('trainerview') ? true : false;
+    if (trainerViewEnabled) {
+        var { visible = enabled && !lonelyMeeting && isModerator } = ownProps;
+    } else {
+        var { visible = enabled && !lonelyMeeting} = ownProps;
+    }
     return {
         _tileViewEnabled: shouldDisplayTileView(state),
         visible

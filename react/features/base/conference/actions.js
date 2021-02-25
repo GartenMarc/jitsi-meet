@@ -582,7 +582,6 @@ export function sendTones(tones: string, duration: number, pause: number) {
  * }}
  */
 export function setFollowMe(enabled: boolean) {
-	console.log("follow me triggered with value: " + enabled);
     return {
         type: SET_FOLLOW_ME,
         enabled

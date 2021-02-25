@@ -3,17 +3,17 @@
 import type { Dispatch } from 'redux';
 
 import {
-	createToolbarEvent,
-	sendAnalytics
+    createToolbarEvent,
+    sendAnalytics
 } from '../../analytics';
 import { TRAINER_VIEW_ENABLED, getFeatureFlag } from '../../base/flags';
 import { translate } from '../../base/i18n';
 import { IconTrainerView } from '../../base/icons';
-import { getLocalParticipant, getParticipantCount, isLocalParticipantModerator } from '../../base/participants';
+import { getLocalParticipant, getParticipantCount, isLocalParticipantModerator, pinParticipant } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../base/toolbox/components';
 import { setTrainerView, switchTrainerViewBody, setTileView, activateTrainerView } from '../actions';
-import { shouldDisplayTrainerView, isTrainerActive} from '../functions';
+import { shouldDisplayTrainerView, isTrainerActive } from '../functions';
 import { muteAllParticipants } from '../../remote-video-menu/actions';
 import logger from '../logger';
 
@@ -26,23 +26,23 @@ type Props = AbstractButtonProps & {
     /**
      * Whether or not trainer view layout has been enabled as the user preference.
      */
-	_trainerViewEnabled: boolean,
+    _trainerViewEnabled: boolean,
 
 	/**
 	 * a boolean wich indicates if trainerView is active or not. used for the follow me function
 	 */
-	_trainerViewActive: boolean,
+    _trainerViewActive: boolean,
 
     /**
      * the local Id, wich should be excluded when all get muted
      */
 
-	localParticipantId: string;
+    localParticipantId: string;
 
     /**
      * Used to dispatch actions from the buttons.
      */
-	dispatch: Dispatch<any>
+    dispatch: Dispatch<any>
 };
 
 /**
@@ -56,11 +56,11 @@ type Props = AbstractButtonProps & {
  * @author Marcus Zentgraf
  */
 class TrainerViewButton<P: Props> extends AbstractButton<P, *> {
-	accessibilityLabel = 'toolbar.accessibilityLabel.trainerView';
-	icon = IconTrainerView;
-	label = 'toolbar.enterTrainerView';
-	toggledLabel = 'toolbar.exitTrainerView';
-	tooltip = 'toolbar.trainerViewToggle';
+    accessibilityLabel = 'toolbar.accessibilityLabel.trainerView';
+    icon = IconTrainerView;
+    label = 'toolbar.enterTrainerView';
+    toggledLabel = 'toolbar.exitTrainerView';
+    tooltip = 'toolbar.trainerViewToggle';
 
     /**
      * Handles clicking / pressing the button.
@@ -69,25 +69,25 @@ class TrainerViewButton<P: Props> extends AbstractButton<P, *> {
      * @protected
      * @returns {void}
      */
-	_handleClick() {
+    _handleClick() {
 
-		const { _trainerViewActive, localParticipantId, dispatch } = this.props;
+        const { _trainerViewActive, localParticipantId, dispatch } = this.props;
 
-		sendAnalytics(createToolbarEvent(
-			'trainerview.button',
-			{
-				'is_enabled': _trainerViewActive
-			}));
-		const value = !_trainerViewActive;
-		switchTrainerViewBody(value);
-		logger.debug(`Trainer view ${value ? 'enable' : 'disable'}`);
-		dispatch(muteAllParticipants([localParticipantId]));
-		dispatch(setTileView(false));
-		dispatch(activateTrainerView(value));
-		dispatch(setTrainerView(value));
-		dispatch(setTileView(true));
+        sendAnalytics(createToolbarEvent(
+            'trainerview.button',
+            {
+                'is_enabled': _trainerViewActive
+            }));
+        const value = !_trainerViewActive;
+        switchTrainerViewBody(value);
+        dispatch(muteAllParticipants([localParticipantId]));
+        dispatch(setTileView(false));
+        dispatch(pinParticipant(localParticipantId));
+        dispatch(activateTrainerView(value));
+        dispatch(setTrainerView(value));
+        dispatch(setTileView(true));
 
-	}
+    }
 
     /**
      * Indicates whether this button is in toggled state or not.
@@ -96,9 +96,9 @@ class TrainerViewButton<P: Props> extends AbstractButton<P, *> {
      * @protected
      * @returns {boolean}
      */
-	_isToggled() {
-		return this.props._trainerViewEnabled;
-	}
+    _isToggled() {
+        return this.props._trainerViewEnabled;
+    }
 }
 
 /**
@@ -110,19 +110,19 @@ class TrainerViewButton<P: Props> extends AbstractButton<P, *> {
  * @returns {Props}
  */
 function _mapStateToProps(state, ownProps) {
-	const enabled = getFeatureFlag(state, TRAINER_VIEW_ENABLED, true);
-	const lonelyMeeting = getParticipantCount(state) < 2;
-	const localParticipant = getLocalParticipant(state);
-	const isModerator = isLocalParticipantModerator(state);
+    const enabled = getFeatureFlag(state, TRAINER_VIEW_ENABLED, true);
+    const lonelyMeeting = getParticipantCount(state) < 2;
+    const localParticipant = getLocalParticipant(state);
+    const isModerator = isLocalParticipantModerator(state);
 
-	const { visible = enabled && !lonelyMeeting && isModerator } = ownProps;
+    const { visible = enabled && !lonelyMeeting && isModerator } = ownProps;
 
-	return {
-		_trainerViewEnabled: shouldDisplayTrainerView(state),
-		_trainerViewActive: isTrainerActive(state),
-		localParticipantId: localParticipant.id,
-		visible
-	}
+    return {
+        _trainerViewEnabled: shouldDisplayTrainerView(state),
+        _trainerViewActive: isTrainerActive(state),
+        localParticipantId: localParticipant.id,
+        visible
+    }
 }
 
 export default translate(connect(_mapStateToProps)(TrainerViewButton));

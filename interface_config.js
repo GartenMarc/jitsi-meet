@@ -45,10 +45,11 @@ var interfaceConfig = {
     CONNECTION_INDICATOR_DISABLED: false,
 
     DEFAULT_BACKGROUND: '#474747',
+
+    DEFAULT_LOGO_URL: 'images/binastar/binastar-logo.png',
     DEFAULT_LOCAL_DISPLAY_NAME: 'Ich',
-    DEFAULT_LOGO_URL: 'images/binastar/LogoGepimpt_160x95.png',
     DEFAULT_REMOTE_DISPLAY_NAME: 'Weiterer Teilnehmer',
-    DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/binastar/LogoGepimpt_160x95.png',
+    DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/binastar/binastar-logo.png',
 
     DISABLE_DOMINANT_SPEAKER_INDICATOR: true,
 

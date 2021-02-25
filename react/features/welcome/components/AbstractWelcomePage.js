@@ -9,6 +9,8 @@ import { appNavigate } from '../../app/actions';
 import isInsecureRoomName from '../../base/util/isInsecureRoomName';
 import { isCalendarEnabled } from '../../calendar-sync';
 import { isRecentListEnabled } from '../../recent-list/functions';
+import axios from 'axios';
+
 
 /**
  * {@code AbstractWelcomePage}'s React {@code Component} prop types.
@@ -189,8 +191,8 @@ export class AbstractWelcomePage extends Component<Props, *> {
      * @protected
      * @returns {void}
      */
-    _onJoin() {
-        const room = this.state.room || this.state.generatedRoomname;
+    _onJoin(keycloak) {
+        let room = this.state.room || this.state.generatedRoomname;
 
         sendAnalytics(
             createWelcomePageEvent('clicked', 'joinButton', {
@@ -206,8 +208,32 @@ export class AbstractWelcomePage extends Component<Props, *> {
             const onAppNavigateSettled
                 = () => this._mounted && this.setState({ joining: false });
 
+            if (keycloak !== undefined && keycloak.authenticated) {
+                console.log("XXXXXX")
+                console.log(keycloak)
+                return
+                }
+                if (xy){
+                axios.get("https://openid.meet.binastar.de/api/jwt", { params: { jwt_room: room } }).then((response) => {
+                    let jwt_token = response.data.token;
+                    console.log("XXXXXE " + jwt_token);
+
+                    if (jwt_token != null) {
+                        console.log("XXXXG" + jwt_token)
+                        room = room + "?jwt=" + jwt_token
+                        this.props.dispatch(appNavigate(room))
+                            .then(onAppNavigateSettled, onAppNavigateSettled);
+                            return
+                    }
+                }, (error) => {
+                    console.log("XXXXXF failed to get jwt-token " + error);
+                });
+
+            }
             this.props.dispatch(appNavigate(room))
                 .then(onAppNavigateSettled, onAppNavigateSettled);
+
+
         }
     }
 
@@ -228,7 +254,7 @@ export class AbstractWelcomePage extends Component<Props, *> {
         });
     }
 
-    _renderInsecureRoomNameWarning: () => React$Component<any>;;
+    _renderInsecureRoomNameWarning: () => React$Component<any>;
 
     /**
      * Renders the insecure room name warning if needed.

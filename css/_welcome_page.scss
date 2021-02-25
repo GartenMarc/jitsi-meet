@@ -3,6 +3,27 @@ body.welcome-page {
     overflow: auto;
 }
 
+@media only screen and (max-width: 500px){
+	.welcome {
+		background-image: none !important;
+		
+		.header {
+			height:95% !important;
+			
+			.header-text-title {
+				font-size: 20px !important;
+				max-width: 75% !important;
+			}
+			.header-text-subtitle {
+				display: none;
+			}
+		}
+		.welcome-card-row {
+			display: none !important;
+		}
+	}
+}
+
 .welcome {
     background-image: $welcomePageBackground;
     background-color: none;
@@ -89,7 +110,7 @@ body.welcome-page {
 
                 .insecure-room-name-warning {
                     align-items: center;
-                    color: red;
+                    color: $insecureRoomWarningColor;
                     display: flex;
                     flex-direction: row;
                     margin-top: 15px;
@@ -98,7 +119,7 @@ body.welcome-page {
                         margin-right: 15px;
 
                         svg {
-                            fill: red
+                            fill: $insecureRoomWarningColor;
                         }
                     }
                 }

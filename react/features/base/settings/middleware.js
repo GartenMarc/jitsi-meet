@@ -176,7 +176,7 @@ function _updateLocalParticipant({ dispatch, getState }, action) {
  */
 function _updateLocalParticipantFromUrl({ dispatch, getState }) {
     const urlParams
-        = parseURLParams(getState()['features/base/connection'].locationURL);
+        = parseURLParams(getState()['features/base/connection'].locationURL, true);
     const urlEmail = urlParams['userInfo.email'];
     const urlDisplayName = urlParams['userInfo.displayName'];
 

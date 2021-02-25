@@ -30,12 +30,8 @@
     }
 
 /* to sort the videocontainer */
+// no sorting needed anymore, because there is no box without video anymore in trainer view
     .display-avatar-only {
-        order: 2;
 		display: none !important;
     }
-    .display-video {
-        order: 1;
-    }
-   
 }

@@ -15,6 +15,7 @@ import {
     PARTICIPANT_ROLE
 } from './constants';
 import { preloadImage } from './preloadImage';
+import logger from './logger';
 
 declare var interfaceConfig: Object;
 
@@ -298,14 +299,14 @@ export function getModerator(stateful: Object | Function){
 * 
 * checks for more than one moderator. returns boolean
 * @param {Object|Function} stateful
-* @returns {boolean} true if there are more than one Moderator false if one or none
+* @returns {boolean} true if there are more or one Moderator aktive. false if none
 * @author Marcus Zentgraf
 */
-export function isMoreThanOneModeratorActive(stateful: Object | Function){
+export function isMoreOrOneModeratorActive(stateful: Object | Function){
 	const participants = _getAllParticipants(stateful);
-	const moderators = participants.filter(p => p.role === PARTICIPANT_ROLE.MODERATOR)
-	logger.log("XXXXX inside isMore value of length: " + moderators.length);
-	if (moderators.length > 1){
+	const moderators = participants.filter(p => p.role === PARTICIPANT_ROLE.MODERATOR);
+	logger.log("moderators in this meeting: " + moderators.length);
+	if (moderators.length >= 1){
 		return true;
 	}
 	return false;
